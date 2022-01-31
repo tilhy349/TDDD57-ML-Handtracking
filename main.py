@@ -1,7 +1,9 @@
-
+import cv2
+import mediapipe as mp
 import pygame 
-
-from WebcamHandler import RunWebCam
+import sys
+from game import Game
+#from WebcamHandler import RunWebCam
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -14,6 +16,17 @@ from pygame.locals import (
     KEYDOWN,
     QUIT,
 )
+
+def user_events():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
 
 # Initialize pygame
 pygame.init()
@@ -29,20 +42,21 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # Variable to keep the main loop running
 running = True
 
-# Main loop
-while running:
-    # Look at every event in the queue
-    for event in pygame.event.get():
-        # Did the user hit a key?
-        if event.type == KEYDOWN:
-            # Was it the Escape key? If so, stop the loop.
-            if event.key == K_ESCAPE:
-                running = False
-      
-        # Did the user click the window close button? If so, stop the loop.
-        elif event.type == QUIT:
-            running = False
-        
-        RunWebCam()
+# mp_drawing = mp.solutions.drawing_utils
+# mp_drawing_styles = mp.solutions.drawing_styles
+# mp_hands = mp.solutions.hands
 
+game = Game(screen)
+
+while True:
+    #Buttons
+    user_events()
+
+    #Update
+    game.update()
+    #pygame.display.update()
+    #FPS?     
+            
+#cap.release()
 #END OF MAIN   
+
