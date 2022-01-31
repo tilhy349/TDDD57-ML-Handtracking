@@ -3,6 +3,8 @@ import mediapipe as mp
 import pygame 
 import sys
 from game import Game
+from settings import *
+
 #from WebcamHandler import RunWebCam
 
 # Import pygame.locals for easier access to key coordinates
@@ -30,10 +32,6 @@ def user_events():
 
 # Initialize pygame
 pygame.init()
-
-# Define constants for the screen width and height
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT

@@ -1,29 +1,44 @@
-.nuget/
-.vscode/
-.vs/
+# Pygame build process: config.py setup.py
+/Setup
+*.pyc
+/build/
+/src_py/version.py
+
+# Windows prebuilt external libraries
+/prebuilt-x??
+/prebuilt_downloads
+
+# macOS generated files
 .DS_Store
 
-Temp/
-Logs/
-Library/
-CodeCoverage/
-obj/
-build/
-*.csproj
-*.sln
+# Sphinx generated files: makeref.py
+/docs/generated
 
-*.aar
-*.dll
-*.dylib
+# Emacs temporary files
+*~
+
+# VIM temporary files
+*.swp
+
+# Visual Studio cache/config directory
+.vs/
+
+# Visual Studio Code cache/config directory
+.vscode/
+
+# PyCharm cache/config directory
+.idea/
+
+# mypy
+.mypy_cache/
+
+# Other
+envdev*
+.virtualenv*
+buildconfig/manylinux-build/wheelhouse/
+anenv
+dist
+.vagrant
+*.egg-info/
 *.so
-*.framework/
-
-bazel-*
-
-Assets/StreamingAssets*
-
-Packages/com.github.homuler.mediapipe/Runtime/Resources/*
-!Packages/com.github.homuler.mediapipe/Runtime/Resources/*.meta
-Packages/com.github.homuler.mediapipe/Runtime/Resources/object_detection_3d.bytes.meta
-Packages/com.github.homuler.mediapipe/Runtime/Plugins/Protobuf*
-Packages/com.github.homuler.mediapipe/Runtime/Scripts/Protobuf/**/*.cs
+__pycache__
