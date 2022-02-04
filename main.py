@@ -5,7 +5,12 @@ import sys
 from game import Game
 from settings import *
 
-#from WebcamHandler import RunWebCam
+# Initialize pygame
+pygame.init()
+
+# Create the screen object
+# The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -19,6 +24,7 @@ from pygame.locals import (
     QUIT,
 )
 
+
 def user_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -30,31 +36,21 @@ def user_events():
                 pygame.quit()
                 sys.exit()
 
-# Initialize pygame
-pygame.init()
-
-# Create the screen object
-# The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
+#START OF MAIN-LOOP
+    
 # Variable to keep the main loop running
 running = True
 
-# mp_drawing = mp.solutions.drawing_utils
-# mp_drawing_styles = mp.solutions.drawing_styles
-# mp_hands = mp.solutions.hands
-
 game = Game(screen)
 
+
 while True:
+    
     #Buttons
     user_events()
 
-    #Update
+    #Update game, draw on screen
     game.update()
-    #pygame.display.update()
-    #FPS?     
-            
-#cap.release()
+    
 #END OF MAIN   
 

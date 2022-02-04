@@ -11,9 +11,11 @@ mp_hands = mp.solutions.hands
 class Hand:
 
     def __init__(self):
-        
+        #Complexity of the hand landmark model: 0 or 1. 
+        #Landmark accuracy as well as inference latency 
+        #generally go up with the model complexity. Default to 1.
         self.hands = mp_hands.Hands(
-            model_complexity=0,
+            model_complexity=1,
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5)
 
@@ -22,15 +24,17 @@ class Hand:
 
         self.results = None
 
-        #self.rect_hitbox = pygame.draw.circle(self.)
+        self.rect_hitbox = pygame.Rect(0, 0, 50, 50)
 
     def draw_marker(self, surface):
+        
         color = (255,255,0)
-        marker = pygame.Rect(30, 30, 60, 60)
-        marker.center = (self.hand_center_x, self.hand_center_y)
-
-        pygame.draw.rect(surface, color, marker)
-        #Draw 
+        #marker = pygame.Rect(20, 20, 40, 40)
+        #marker.center = (self.hand_center_x, self.hand_center_y)
+        #pygame.draw.rect(surface, color, marker)
+        pygame.draw.circle(surface, color, (self.hand_center_x, self.hand_center_y),15)
+        self.rect_hitbox.center = (self.hand_center_x , self.hand_center_y)
+        pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
 
     def process_hands(self, frame):
                    
@@ -46,8 +50,8 @@ class Hand:
         
         if self.results.multi_hand_landmarks:
             for hand_landmarks in self.results.multi_hand_landmarks:
-                #Get position of landmark 9 (mittenknogen (vid långfingret)) 
-                x, y = hand_landmarks.landmark[9].x, hand_landmarks.landmark[9].y
+                #Get position of landmark 9 (Toppen på pekfingret)) 
+                x, y = hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y
                 
                 #Store position of hand in game window
                 self.hand_center_x = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
