@@ -34,7 +34,7 @@ class Hand:
         
         pygame.draw.circle(surface, self.color, (self.index_finger_pos[0], self.index_finger_pos[1]),15)
         self.rect_hitbox.center = (self.index_finger_pos[0] , self.index_finger_pos[1])
-        pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
+        #pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
 
 
     def check_pinching(self):

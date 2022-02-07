@@ -10,17 +10,21 @@ class Box:
         self.ycoord = ycoord
         self.width = width
         self.height = height
-        self.rect = pygame.Rect(xcoord, ycoord, height, width)
+        self.rect = pygame.Rect(xcoord, ycoord, width, height)
         
         self.color = color
         self.color_org = color
         self.selected_color = self.color_org + pygame.Color(100, 100, 100)
-        self.hover_color = pygame.Color(255, 60, 60)
+        self.hover_color = self.color_org + pygame.Color(60, 60, 60)
         self.hover = False
 
         self.selected = False
 
-        BORDER = 50
+        BORDER = (self.width if self.width < self.height else self.height ) * 0.66
+
+        #low limit and high limit for hover-border
+        BORDER = 10 if BORDER < 10 else BORDER
+        BORDER = 40 if BORDER > 40 else BORDER
 
         self.deselect_rect_top = pygame.Rect(xcoord, ycoord - BORDER, self.width, BORDER)
         self.deselect_rect_right = pygame.Rect(xcoord + width, ycoord - BORDER, BORDER, height + BORDER * 2)
@@ -46,10 +50,10 @@ class Box:
             self.color = self.color_org 
         
         #Draw all hitbox
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
         
         #Draw the box
         pygame.draw.rect(surface, self.color, self.rect)
@@ -70,19 +74,7 @@ class Box:
         coll_deact3 = self.deselect_rect_bottom.colliderect(marker_hitbox)
         coll_deact4 = self.deselect_rect_left.colliderect(marker_hitbox)
 
-        coll_deact = coll_deact1 or coll_deact2 or coll_deact3 or coll_deact4
-
-        #State (b-delen)
-        # if PINCH_TO_SELECT:
-        #     #Inside box and pinching
-        #     activation = collision_activate and hands.check_pinching()
-        #     #Outside box (inside border) or not pinching
-        #     deactivation = coll_deact and hands.check_pinching() == False
-        #     #Inside border
-        #     #(a-delen)
-        # else:
-        #     activation = collision_activate
-        #     deactivation = coll_deact 
+        coll_deact = coll_deact1 or coll_deact2 or coll_deact3 or coll_deact4 
 
         #HOVER TO SELECT MODE
         if not PINCH_TO_SELECT:
