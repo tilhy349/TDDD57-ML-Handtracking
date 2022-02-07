@@ -19,8 +19,8 @@ class Game:
         self.hands = Hand()
 
         self.box1 = Box(100, 100, 50, 50, pygame.Color(220, 0, 0))
-        self.box2 = Box(200, 100, 40, 40, pygame.Color(0, 220, 0))
-        self.box3 = Box(250, 100, 100, 100, pygame.Color(0, 0, 220))
+        self.box2 = Box(200, 300, 40, 40, pygame.Color(0, 220, 0))
+        self.box3 = Box(500, 100, 100, 100, pygame.Color(0, 0, 220))
 
 
     def load_camera(self):
@@ -39,10 +39,12 @@ class Game:
         self.box2.draw(self.surface)
         self.box3.draw(self.surface)
     
-    def check_hand_pos(self):
-        self.box1.collide(self.hands.rect_hitbox)
-        self.box2.collide(self.hands.rect_hitbox)
-        self.box3.collide(self.hands.rect_hitbox)     
+    #Denna funkar 
+    def check_the_boxes(self):
+        self.box1.collide(self.hands)
+        self.box2.collide(self.hands)
+        self.box3.collide(self.hands)   
+      
         
     def update(self):
         self.load_camera()
@@ -50,10 +52,12 @@ class Game:
         #Draw landmarks and process hand positions
         self.frame = self.hands.process_hands(self.frame)
 
+        # --- LAB 1: hold over to select & pinch to select --
         #Compare hand position to boxes
         #Change color saturation if marker is covering one of the boxes
-        self.check_hand_pos()
+        self.check_the_boxes()
 
+        
         self.draw()       
         
         #Draw hand marker based on hand position

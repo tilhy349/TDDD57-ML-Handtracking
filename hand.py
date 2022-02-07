@@ -1,8 +1,8 @@
 import mediapipe as mp
 import cv2
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH
-
+import math
+from settings import PINCH_THRESHOLD, SCREEN_HEIGHT, SCREEN_WIDTH
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -19,22 +19,40 @@ class Hand:
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5)
 
-        self.hand_center_x = 0
-        self.hand_center_y = 0
+        self.index_finger_pos = [0, 0]
+        self.thumb_pos = [0, 0]
 
         self.results = None
 
-        self.rect_hitbox = pygame.Rect(0, 0, 50, 50)
+        self.rect_hitbox = pygame.Rect(0, 0, 30, 30)
+        self.color = (255, 255, 0)
+        self.color_org = (255, 255, 0)
+        self.color_pinch = (255, 255, 255)
+        self.pinching = False
 
     def draw_marker(self, surface):
         
-        color = (255,255,0)
-        #marker = pygame.Rect(20, 20, 40, 40)
-        #marker.center = (self.hand_center_x, self.hand_center_y)
-        #pygame.draw.rect(surface, color, marker)
-        pygame.draw.circle(surface, color, (self.hand_center_x, self.hand_center_y),15)
-        self.rect_hitbox.center = (self.hand_center_x , self.hand_center_y)
+        pygame.draw.circle(surface, self.color, (self.index_finger_pos[0], self.index_finger_pos[1]),15)
+        self.rect_hitbox.center = (self.index_finger_pos[0] , self.index_finger_pos[1])
         pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
+
+
+    def check_pinching(self):
+        #Calculating the distance between index finger and thumb
+        dist = math.hypot(self.index_finger_pos[0]-self.thumb_pos[0], 
+        self.index_finger_pos[1]-self.thumb_pos[1])
+        #print(dist)
+        if dist < PINCH_THRESHOLD:
+            self.pinching = True
+            self.color =  self.color_pinch 
+            #print("pintching")
+            
+        else:
+            self.pinching = False
+            self.color =  self.color_org
+            
+        return self.pinching
+            
 
     def process_hands(self, frame):
                    
@@ -53,10 +71,16 @@ class Hand:
                 #Get position of landmark 9 (Toppen på pekfingret)) 
                 x, y = hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y
                 
-                #Store position of hand in game window
-                self.hand_center_x = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
-                self.hand_center_y = int(y * SCREEN_HEIGHT)
-                
+                #Store position of index finger in game window
+                self.index_finger_pos[0] = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
+                self.index_finger_pos[1] = int(y * SCREEN_HEIGHT)
+
+                x, y = hand_landmarks.landmark[4].x, hand_landmarks.landmark[4].y
+
+                #Store position of thumb in game window
+                self.thumb_pos[0] = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
+                self.thumb_pos[1] = int(y * SCREEN_HEIGHT)
+  
                 #draw the the landmarks on the hand in the video
                 mp_drawing.draw_landmarks(
                     frame,

@@ -4,3 +4,9 @@ SCREEN_HEIGHT = 600
 
 #FPS
 FPS = 60
+
+#STATE
+PINCH_TO_SELECT = True
+
+#Hand settings
+PINCH_THRESHOLD = 50

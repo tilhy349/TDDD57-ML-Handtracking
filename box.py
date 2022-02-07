@@ -1,6 +1,8 @@
 import pygame
 import time
 
+from settings import PINCH_TO_SELECT
+
 class Box:
 
     def __init__(self, xcoord, ycoord, width, height, color):
@@ -8,14 +10,22 @@ class Box:
         self.ycoord = ycoord
         self.width = width
         self.height = height
+        self.rect = pygame.Rect(xcoord, ycoord, height, width)
+        
         self.color = color
         self.color_org = color
-        self.hover_color = self.color + pygame.Color(60, 60, 60)
-        self.rect = pygame.Rect(xcoord, ycoord, height, width)
+        self.selected_color = self.color_org + pygame.Color(100, 100, 100)
+        self.hover_color = pygame.Color(255, 60, 60)
+        self.hover = False
 
-        self.start_clock = False
-        self.time_hover = 0
         self.selected = False
+
+        BORDER = 50
+
+        self.deselect_rect_top = pygame.Rect(xcoord, ycoord - BORDER, self.width, BORDER)
+        self.deselect_rect_right = pygame.Rect(xcoord + width, ycoord - BORDER, BORDER, height + BORDER * 2)
+        self.deselect_rect_bottom = pygame.Rect(xcoord, ycoord + height, self.width, BORDER)
+        self.deselect_rect_left = pygame.Rect(xcoord - BORDER, ycoord - BORDER, BORDER, height + BORDER * 2)
 
     def hover(self, state):
         if state:
@@ -24,36 +34,80 @@ class Box:
             self.color = self.color_org
          
     def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-        if self.selected:
-            #Draw frame
-            pygame.draw.rect(surface, (255, 255, 255), self.rect, 1)
-
-    def collide(self, hitbox):
         
-        collision = self.rect.colliderect(hitbox)
-        #collision = False
-        print("Coords: ", hitbox.center)
+        #Set the right color
 
-        self.hover(collision)
-        print("Collision: ", collision)
-        #First time hover over, set start time 
-        if collision and self.start_clock == False:
-            self.start_time_hover = time.time()
-            #print("Start clock:  = ", self.start_time_hover)
-            self.start_clock == True
-        elif collision:
-            #continue counting
-            print("Collision = ", collision)
-            self.time_hover = time.time() - self.start_time_hover            
+        if self.selected:
+            self.color = self.selected_color
+        #Set hover on box that indecate that it can be selected
+        elif self.hover:
+            self.color = self.hover_color
         else:
-            #reset time
-            self.start_clock = False
-            self.time_hover = 0
-            
-        #If hover long enough, select box
-        #print("Current hover time = ", self.time_hover)
-        if self.time_hover > 3000:
-            self.selected = True
+            self.color = self.color_org 
+        
+        #Draw all hitbox
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
+        
+        #Draw the box
+        pygame.draw.rect(surface, self.color, self.rect)
 
+        #If selected, draw border
+        if self.selected:
+            pygame.draw.rect(surface, (255, 255, 255), self.rect, 4)
+
+
+    def collide(self, hands):
+        marker_hitbox = hands.rect_hitbox
+        #Controll if marker is on the Box
+        collision_activate = self.rect.colliderect(marker_hitbox)
+        
+        #Controll if marker is in any of the deactivation hitboxes
+        coll_deact1 = self.deselect_rect_top.colliderect(marker_hitbox)
+        coll_deact2 = self.deselect_rect_right.colliderect(marker_hitbox)
+        coll_deact3 = self.deselect_rect_bottom.colliderect(marker_hitbox)
+        coll_deact4 = self.deselect_rect_left.colliderect(marker_hitbox)
+
+        coll_deact = coll_deact1 or coll_deact2 or coll_deact3 or coll_deact4
+
+        #State (b-delen)
+        # if PINCH_TO_SELECT:
+        #     #Inside box and pinching
+        #     activation = collision_activate and hands.check_pinching()
+        #     #Outside box (inside border) or not pinching
+        #     deactivation = coll_deact and hands.check_pinching() == False
+        #     #Inside border
+        #     #(a-delen)
+        # else:
+        #     activation = collision_activate
+        #     deactivation = coll_deact 
+
+        #HOVER TO SELECT MODE
+        if not PINCH_TO_SELECT:
+            if collision_activate:
+                self.selected = True
+                self.hover = False
+            elif coll_deact:
+                self.selected = False
+                self.hover = True
+            else:
+                self.hover = False
+        #PINCH TO SELECT MODE
+        else:
+            if collision_activate and hands.check_pinching():
+                self.selected = True
+                self.hover = False
+            elif coll_deact or collision_activate:
+                self.hover = True
+                self.selected = False
+            else:
+                self.hover = False
+
+
+        print(self.hover)
+        
+        
+     
          
