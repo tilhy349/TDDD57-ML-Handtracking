@@ -34,6 +34,11 @@ class Game:
         # Initialing Color
         self.surface.fill((0,0,0))
 
+        #Change position of boxes if they are selected
+        self.box1.update_pos_selected(self.hands)
+        self.box2.update_pos_selected(self.hands)
+        self.box3.update_pos_selected(self.hands)
+
         # Drawing Rectangle, Rect(left, top, width, height)
         self.box1.draw(self.surface)
         self.box2.draw(self.surface)
@@ -41,8 +46,8 @@ class Game:
         
         #Draw rectangles to inser the boxes in
         pygame.draw.rect(self.surface, (66, 150, 178), pygame.Rect(300, 400, 150, 150), 1)
-        pygame.draw.rect(self.surface, (66, 150, 178), pygame.Rect(500, 400, 40, 40), 1)
-        pygame.draw.rect(self.surface, (66, 150, 178), pygame.Rect(600, 400, 80, 80), 1)
+        pygame.draw.rect(self.surface, (66, 150, 178), pygame.Rect(500, 400, 70, 50), 1)
+        pygame.draw.rect(self.surface, (66, 150, 178), pygame.Rect(600, 400, 80, 120), 1)
     
     
     #Controll the boxes is being selectede or not  
@@ -62,7 +67,6 @@ class Game:
         #Compare hand position to boxes
         #Change color saturation if marker is covering one of the boxes
         self.check_the_boxes()
-
         
         self.draw()       
         

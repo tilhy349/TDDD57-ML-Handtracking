@@ -30,12 +30,16 @@ class Hand:
         self.color_pinch = (255, 255, 255)
         self.pinching = False
 
+        self.selected_box = False
+
+        self.selected_point = (0, 0)
+        self.start_pinch = False
+
     def draw_marker(self, surface):
         
         pygame.draw.circle(surface, self.color, (self.index_finger_pos[0], self.index_finger_pos[1]),15)
         self.rect_hitbox.center = (self.index_finger_pos[0] , self.index_finger_pos[1])
         #pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
-
 
     def check_pinching(self):
         #Calculating the distance between index finger and thumb
@@ -45,11 +49,16 @@ class Hand:
         if dist < PINCH_THRESHOLD:
             self.pinching = True
             self.color =  self.color_pinch 
-            #print("pintching")
+
+            if not self.start_pinch:
+                self.start_pinch = True
+                self.selected_point = (self.index_finger_pos[0], self.index_finger_pos[1])
+                #print("Updating selected point : ", self.selected_point)
             
         else:
             self.pinching = False
             self.color =  self.color_org
+            self.start_pinch = False
             
         return self.pinching
             

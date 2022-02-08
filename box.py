@@ -20,23 +20,46 @@ class Box:
 
         self.selected = False
 
-        BORDER = (self.width if self.width < self.height else self.height ) * 0.66
+        self.BORDER = (self.width if self.width < self.height else self.height ) * 0.66
 
         #low limit and high limit for hover-border
-        BORDER = 10 if BORDER < 10 else BORDER
-        BORDER = 40 if BORDER > 40 else BORDER
+        self.BORDER = 10 if self.BORDER < 10 else self.BORDER
+        self.BORDER = 40 if self.BORDER > 40 else self.BORDER
 
-        self.deselect_rect_top = pygame.Rect(xcoord, ycoord - BORDER, self.width, BORDER)
-        self.deselect_rect_right = pygame.Rect(xcoord + width, ycoord - BORDER, BORDER, height + BORDER * 2)
-        self.deselect_rect_bottom = pygame.Rect(xcoord, ycoord + height, self.width, BORDER)
-        self.deselect_rect_left = pygame.Rect(xcoord - BORDER, ycoord - BORDER, BORDER, height + BORDER * 2)
+        self.deselect_rect_top = pygame.Rect(xcoord, ycoord - self.BORDER, self.width, self.BORDER)
+        self.deselect_rect_right = pygame.Rect(xcoord + width, ycoord - self.BORDER, self.BORDER, height + self.BORDER * 2)
+        self.deselect_rect_bottom = pygame.Rect(xcoord, ycoord + height, self.width, self.BORDER)
+        self.deselect_rect_left = pygame.Rect(xcoord - self.BORDER, ycoord - self.BORDER, self.BORDER, height + self.BORDER * 2)
 
     def hover(self, state):
         if state:
             self.color = self.hover_color
         else:
             self.color = self.color_org
-         
+
+    def update_pos_selected(self, hands):
+        #print("current pos = ", curr_pos)
+        #print("selected = ", selected_pos)
+
+        if self.selected:
+            curr_pos = (hands.index_finger_pos[0], hands.index_finger_pos[1])
+            selected_pos = (hands.selected_point[0], hands.selected_point[1])
+
+            #print("Selected point: ", hands.selected_point)
+            #print("Offset = ", (selected_pos[0] - curr_pos[0], selected_pos[1] - curr_pos[1]))
+
+            self.deselect_rect_top.update(self.xcoord - (selected_pos[0] - curr_pos[0]), 
+                self.ycoord - self.BORDER - (selected_pos[1] - curr_pos[1]), self.width, self.BORDER)
+            self.deselect_rect_right.update(self.xcoord + self.width - (selected_pos[0] - curr_pos[0]), 
+                self.ycoord - self.BORDER - (selected_pos[1] - curr_pos[1]), self.BORDER, self.height + self.BORDER * 2)
+            self.deselect_rect_bottom.update(self.xcoord - (selected_pos[0] - curr_pos[0]), 
+                self.ycoord + self.height - (selected_pos[1] - curr_pos[1]), self.width, self.BORDER)
+            self.deselect_rect_left.update(self.xcoord - self.BORDER - (selected_pos[0] - curr_pos[0]), 
+                self.ycoord - self.BORDER - (selected_pos[1] - curr_pos[1]), self.BORDER, self.height + self.BORDER * 2)
+
+            #Also make it imposible to have multiple boxes selected at once
+            self.rect.update(self.xcoord - (selected_pos[0] - curr_pos[0]), self.ycoord - (selected_pos[1] - curr_pos[1]), self.width, self.height)
+            
     def draw(self, surface):
         
         #Set the right color
@@ -66,7 +89,7 @@ class Box:
     def collide(self, hands):
         marker_hitbox = hands.rect_hitbox
         #Controll if marker is on the Box
-        collision_activate = self.rect.colliderect(marker_hitbox)
+        collision_activate = self.rect.colliderect(marker_hitbox) 
         
         #Controll if marker is in any of the deactivation hitboxes
         coll_deact1 = self.deselect_rect_top.colliderect(marker_hitbox)
@@ -88,17 +111,29 @@ class Box:
                 self.hover = False
         #PINCH TO SELECT MODE
         else:
-            if collision_activate and hands.check_pinching():
+            #Block user from picking up multiple boxes
+            allowed = self.selected or not hands.selected_box
+
+            if collision_activate and hands.check_pinching() and allowed:
                 self.selected = True
+                hands.selected_box = True
                 self.hover = False
-            elif coll_deact or collision_activate:
+
+            elif (coll_deact or collision_activate) and allowed:
+                self.xcoord = self.rect.x
+                self.ycoord = self.rect.y
+
                 self.hover = True
                 self.selected = False
+                hands.selected_box = False
             else:
+                #self.xcoord = self.rect.x
+                #self.ycoord = self.rect.y
+
                 self.hover = False
+        print(hands.selected_box)
 
 
-        print(self.hover)
         
         
      
