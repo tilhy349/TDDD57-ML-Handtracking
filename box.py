@@ -131,7 +131,7 @@ class Box:
                 #self.ycoord = self.rect.y
 
                 self.hover = False
-        print(hands.selected_box)
+        #print(hands.selected_box)
 
 
         
