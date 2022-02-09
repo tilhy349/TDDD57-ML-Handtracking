@@ -1,7 +1,7 @@
 import pygame
 import time
 
-from settings import PINCH_TO_SELECT
+from settings import *
 
 class Box:
 
@@ -42,7 +42,7 @@ class Box:
         #print("selected = ", selected_pos)
 
         if self.selected:
-            curr_pos = (hands.index_finger_pos[0], hands.index_finger_pos[1])
+            curr_pos = (hands.marker_pos[0], hands.marker_pos[1])
             selected_pos = (hands.selected_point[0], hands.selected_point[1])
 
             #print("Selected point: ", hands.selected_point)
@@ -114,7 +114,7 @@ class Box:
             #Block user from picking up multiple boxes
             allowed = self.selected or not hands.selected_box
 
-            if collision_activate and hands.check_pinching() and allowed:
+            if collision_activate and hands.left_hand_gesture == Gesture.PINCH and allowed:
                 self.selected = True
                 hands.selected_box = True
                 self.hover = False
@@ -129,9 +129,8 @@ class Box:
             else:
                 #self.xcoord = self.rect.x
                 #self.ycoord = self.rect.y
-
+                
                 self.hover = False
-        #print(hands.selected_box)
 
 
         

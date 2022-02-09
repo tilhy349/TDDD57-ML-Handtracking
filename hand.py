@@ -2,7 +2,7 @@ import mediapipe as mp
 import cv2
 import pygame
 import math
-from settings import PINCH_THRESHOLD, SCREEN_HEIGHT, SCREEN_WIDTH
+from settings import *
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -11,57 +11,94 @@ mp_hands = mp.solutions.hands
 class Hand:
 
     def __init__(self):
-        #Complexity of the hand landmark model: 0 or 1. 
-        #Landmark accuracy as well as inference latency 
-        #generally go up with the model complexity. Default to 1.
+        #Variables for hand tracking
         self.hands = mp_hands.Hands(
             model_complexity=1,
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5)
 
-        self.index_finger_pos = [0, 0]
-        self.thumb_pos = [0, 0]
-
         self.results = None
 
+        #Variables for right hand 
+        self.marker_pos = [0, 0]
+
+        self.pinching = False
+        self.start_pinch = False
+
+        self.is_rockNroll = False
+
+        self.right_hand_gesture = Gesture.OPEN
+        self.left_hand_gesture = Gesture.OPEN
+
         self.rect_hitbox = pygame.Rect(0, 0, 30, 30)
+
+        #Variables for color handling
         self.color = (255, 255, 0)
         self.color_org = (255, 255, 0)
         self.color_pinch = (255, 255, 255)
-        self.pinching = False
-
+        
         self.selected_box = False
-
-        self.selected_point = (0, 0)
-        self.start_pinch = False
+        self.selected_point = (0, 0)    
 
     def draw_marker(self, surface):
         
-        pygame.draw.circle(surface, self.color, (self.index_finger_pos[0], self.index_finger_pos[1]),15)
-        self.rect_hitbox.center = (self.index_finger_pos[0] , self.index_finger_pos[1])
+        pygame.draw.circle(surface, self.color, (self.marker_pos[0], self.marker_pos[1]),15)
+        self.rect_hitbox.center = (self.marker_pos[0] , self.marker_pos[1])
         #pygame.draw.rect(surface, (255, 255, 255), self.rect_hitbox, 2)
 
-    def check_pinching(self):
-        #Calculating the distance between index finger and thumb
-        dist = math.hypot(self.index_finger_pos[0]-self.thumb_pos[0], 
-        self.index_finger_pos[1]-self.thumb_pos[1])
-        #print(dist)
+    #PLAN FOR ROTATION
+    #STORE Initial thumb value when doing pose first time
+    #Compare angle between (vector from new thumb pos to base of hand)
+    #and vector from initial thumb pos to base of hand
+    #angle = cos-1(len(a)/len(b))
+    #0 to 180 degrees --> angle sets color value
+    
+    #Obs: hand_label is mirrored!
+    def process_gesture(self, hand_landmarks, hand_label):
+       
+        if hand_label == "Left" and self.gesture_pinch(hand_landmarks):
+           self.left_hand_gesture = Gesture.PINCH
+        
+        elif hand_label == "Left" and self.gesture_close(hand_landmarks):
+            self.left_hand_gesture = Gesture.CLOSE
+            
+        elif hand_label == "Right" and self.gesture_rotate(hand_landmarks):
+            self.right_hand_gesture = Gesture.ROTATE
+
+        elif hand_label == "Left":
+            self.left_hand_gesture = Gesture.OPEN
+       
+        elif hand_label == "Right":
+            self.righ_hand_gesture = Gesture.OPEN       
+        
+    def gesture_pinch(self, hand_landmarks):
+        dist = math.hypot(hand_landmarks.landmark[8].x - hand_landmarks.landmark[4].x,
+        hand_landmarks.landmark[8].y - hand_landmarks.landmark[4].y)
+        
         if dist < PINCH_THRESHOLD:
-            self.pinching = True
             self.color =  self.color_pinch 
 
             if not self.start_pinch:
                 self.start_pinch = True
-                self.selected_point = (self.index_finger_pos[0], self.index_finger_pos[1])
-                #print("Updating selected point : ", self.selected_point)
-            
+                self.selected_point = (self.marker_pos[0], self.marker_pos[1])
+                
+            return True
         else:
-            self.pinching = False
             self.color =  self.color_org
             self.start_pinch = False
             
-        return self.pinching
-            
+            return False
+    
+    def gesture_close(self, hand_landmarks):
+        condition = (hand_landmarks.landmark[8].y > hand_landmarks.landmark[5].y and
+            hand_landmarks.landmark[12].y > hand_landmarks.landmark[9].y and
+            hand_landmarks.landmark[16].y > hand_landmarks.landmark[13].y and
+            hand_landmarks.landmark[20].y > hand_landmarks.landmark[17].y)
+
+        return condition
+
+    def gesture_rotate(self, hand_landmarks):
+        return False
 
     def process_hands(self, frame):
                    
@@ -76,20 +113,22 @@ class Hand:
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         
         if self.results.multi_hand_landmarks:
-            for hand_landmarks in self.results.multi_hand_landmarks:
+            for idx, hand_landmarks in enumerate(self.results.multi_hand_landmarks):
+                
+                #Get the lable of the hand (Right or Left), it is mirrored!!
+                hand_label = self.results.multi_handedness[idx].classification[0].label
+
                 #Get position of landmark 9 (Toppen på pekfingret)) 
                 x, y = hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y
-                
+
                 #Store position of index finger in game window
-                self.index_finger_pos[0] = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
-                self.index_finger_pos[1] = int(y * SCREEN_HEIGHT)
+                #print("index finger local = ", (x, y))
+                self.marker_pos[0] = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
+                self.marker_pos[1] = int(y * SCREEN_HEIGHT)
 
-                x, y = hand_landmarks.landmark[4].x, hand_landmarks.landmark[4].y
-
-                #Store position of thumb in game window
-                self.thumb_pos[0] = SCREEN_WIDTH - int(x * SCREEN_WIDTH)
-                self.thumb_pos[1] = int(y * SCREEN_HEIGHT)
-  
+                # Process the hands landmark points,
+                self.process_gesture(hand_landmarks, hand_label)
+                
                 #draw the the landmarks on the hand in the video
                 mp_drawing.draw_landmarks(
                     frame,
@@ -97,4 +136,9 @@ class Hand:
                     mp_hands.HAND_CONNECTIONS,
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())  
+                        
+        #print("Left hand gesture = ", self.left_hand_gesture)   
+        #print("Right hand gesture = ", self.right_hand_gesture, "\n")     
         return frame 
+
+    

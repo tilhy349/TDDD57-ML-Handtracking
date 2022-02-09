@@ -9,4 +9,11 @@ FPS = 60
 PINCH_TO_SELECT = True
 
 #Hand settings
-PINCH_THRESHOLD = 40
+PINCH_THRESHOLD = 0.07
+
+import enum
+class Gesture(enum.Enum):
+    PINCH = 1
+    OPEN = 2
+    CLOSE = 3
+    ROTATE = 4
