@@ -18,13 +18,13 @@ class Game:
 
         self.hands = Hand()
 
-        self.boxes = [Box(100, 100, 50, 100, pygame.Color(220, 20, 20)), 
-                      Box(250, 100, 60, 40, pygame.Color(220, 20, 180)), 
+        self.boxes = [Box(200, 100, 50, 100, pygame.Color(220, 20, 20)), 
+                      Box(350, 100, 60, 40, pygame.Color(220, 20, 180)), 
                       Box(500, 100, 100, 100, pygame.Color(20, 20, 220))]
         
-        self.areas = [pygame.Rect(300, 400, 150, 150), 
-                      pygame.Rect(500, 400, 70, 50), 
-                      pygame.Rect(600, 400, 80, 120)]
+        self.areas = [pygame.Rect(300, 300, 150, 150), 
+                      pygame.Rect(500, 300, 70, 50), 
+                      pygame.Rect(600, 300, 80, 120)]
 
     def load_camera(self):
         #Store the current frame from webcam
@@ -47,7 +47,9 @@ class Game:
         self.check_accuracy()
 
         for i in range(len(self.boxes)):
-            self.boxes[i].process_state(self.hands)
+            self.boxes[i].process_state(self.hands)    
+
+        for i in range(len(self.boxes)):
             self.boxes[i].draw(self.surface)
 
     #Set the background to green if all boxes is inside a rectangle
