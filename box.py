@@ -1,6 +1,7 @@
 import pygame
 import time
 import enum
+import math
 
 from settings import *
 
@@ -17,6 +18,9 @@ class Box:
         self.width = width
         self.height = height
         self.rect = pygame.Rect(xcoord, ycoord, width, height)
+
+        self.width_org = width
+        self.height_org = height
 
         self.current_state = State.UNSELECTED
         
@@ -66,11 +70,32 @@ class Box:
                 self.ycoord = self.rect.y
                 hands.selected_box = False
             elif (not self.collide_box(hands) or hands.left_hand_gesture != Gesture.PINCH) and self.current_state == State.SELECTED:
+                print("UNSELECTED")
                 self.current_state = State.UNSELECTED
                 self.xcoord = self.rect.x
                 self.ycoord = self.rect.y  
-                hands.selected_box = False               
+                hands.selected_box = False
+            else:
+                self.current_state = State.UNSELECTED         
+
+    def update_size(self, angle):
+        value = math.cos(angle - math.pi/2) + 1 #0 - 1 --> degrees -90 to 90
+
+        self.rect.update(self.xcoord, self.ycoord, self.width_org * value, self.height_org * value)
+
+        self.width = self.rect.width
+        self.height = self.rect.height
         
+        self.deselect_rect_top.update(self.xcoord, 
+                self.ycoord - self.BORDER, self.width, self.BORDER)
+        self.deselect_rect_right.update(self.xcoord + self.width, 
+                self.ycoord - self.BORDER, self.BORDER, self.height + self.BORDER * 2)
+        self.deselect_rect_bottom.update(self.xcoord, 
+                self.ycoord + self.height, self.width, self.BORDER)
+        self.deselect_rect_left.update(self.xcoord - self.BORDER, 
+                self.ycoord - self.BORDER , self.BORDER, self.height + self.BORDER * 2)
+        
+
     def update_pos_selected(self, hands):
         #print("current pos = ", curr_pos)
         
@@ -95,16 +120,16 @@ class Box:
         if self.current_state == State.SELECTED:
             self.color = self.selected_color
         #Set hover on box that indecate that it can be selected
-        elif self.current_state == State.SELECTED:
+        elif self.current_state == State.HOVERED:
             self.color = self.hover_color
         else:
-            self.color = self.color_org 
+            self.color = self.color_org
         
         #Draw all hitbox
-        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
-        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
-        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
-        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
+        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
         
         #Draw the box
         pygame.draw.rect(surface, self.color, self.rect)

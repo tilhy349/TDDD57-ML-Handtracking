@@ -5,6 +5,7 @@ import cv2
 import mediapipe as mp
 from hand import Hand
 from box import Box
+from settings import Gesture
 
 class Game:
     def __init__(self, surface):
@@ -47,10 +48,11 @@ class Game:
         self.check_accuracy()
 
         for i in range(len(self.boxes)):
-            self.boxes[i].process_state(self.hands)    
-
-        for i in range(len(self.boxes)):
-            self.boxes[i].draw(self.surface)
+            self.boxes[i].process_state(self.hands) 
+            if self.hands.left_hand_gesture == Gesture.CLOSE:
+                self.boxes[i].update_size(self.hands.angle)
+            self.boxes[i].draw(self.surface)   
+            
 
     #Set the background to green if all boxes is inside a rectangle
     def check_accuracy(self):

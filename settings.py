@@ -11,6 +11,10 @@ PINCH_TO_SELECT = True
 #Hand settings
 PINCH_THRESHOLD = 0.07
 
+#Size limits
+MIN_SIZE = [1.0, 1.0]
+MAX_SIZE = [100.0, 100.0]
+
 import enum
 class Gesture(enum.Enum):
     PINCH = 1

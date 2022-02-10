@@ -43,6 +43,8 @@ class Hand:
 
         self.tracking = [0, 0]  
 
+        self.angle = 0
+
     def draw_marker(self, surface):
 
         #Change color on marker depending on hand gesture
@@ -51,7 +53,7 @@ class Hand:
         elif self.left_hand_gesture == Gesture.CLOSE:
             self.color = self.color_close
         else:
-            self.color = self.color
+            self.color = self.color_org
         
         pygame.draw.circle(surface, self.color, (self.marker_pos[0], self.marker_pos[1]),15)
         self.rect_hitbox.center = (self.marker_pos[0] , self.marker_pos[1])
@@ -74,7 +76,7 @@ class Hand:
         #If the left hand is closed--> update gesture
         elif hand_label == "Left" and self.gesture_close(hand_landmarks):
             self.left_hand_gesture = Gesture.CLOSE
-       
+            self.calculate_rotation(hand_landmarks)
         # elif hand_label == "Right" and self.gesture_rotate(hand_landmarks):
         #     self.right_hand_gesture = Gesture.ROTATE
             
@@ -113,7 +115,6 @@ class Hand:
                      hand_landmarks.landmark[20].y < hand_landmarks.landmark[17].y)
         
         if dist < PINCH_THRESHOLD and condition:
-            #self.color =  self.color_pinch 
             
             if not self.start_pinch:
                 self.start_pinch = True
@@ -121,7 +122,6 @@ class Hand:
                 
             return True
         else:
-            self.color =  self.color_org
             self.start_pinch = False
             
             return False
@@ -131,8 +131,6 @@ class Hand:
             hand_landmarks.landmark[12].y > hand_landmarks.landmark[9].y and
             hand_landmarks.landmark[16].y > hand_landmarks.landmark[13].y and
             hand_landmarks.landmark[20].y > hand_landmarks.landmark[17].y)
-        
-        #self.selected_point = (self.marker_pos[0], self.marker_pos[1])
 
         return condition
 
@@ -140,7 +138,15 @@ class Hand:
         
         return False
 
-
+    def calculate_rotation(self, hand_landmarks):
+        #Tangens mellan self.tracking och self.selected_point
+        radians = math.atan2(self.marker_pos[1] - self.tracking[1],
+                             self.marker_pos[0] - self.tracking[0])
+        ##self.angle = math.degrees(radians)
+        self.angle = radians
+        #print(math.degrees(self.angle))
+    
+    
     def process_hands(self, frame):
                    
         #Prestanda
