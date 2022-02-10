@@ -32,39 +32,25 @@ class Game:
     
     def draw(self):
         #Draw
-        curr_time = time.time() - self.start_time
+        #curr_time = time.time() - self.start_time
 
         # Initialing Color
-        self.surface.fill((0,0,0))
-
-        self.check_accuracy()
-        
-        for i in range(len(self.boxes)):
-            self.boxes[i].update_pos_selected(self.hands)
-            self.boxes[i].draw(self.surface)
-
-        #Change position of boxes if they are selected
-        # self.box1.update_pos_selected(self.hands)
-        # self.box2.update_pos_selected(self.hands)
-        # self.box3.update_pos_selected(self.hands)
-
-        # Drawing Rectangle, Rect(left, top, width, height)
-        # self.box1.draw(self.surface)
-        # self.box2.draw(self.surface)
-        # self.box3.draw(self.surface)
+        #self.surface.fill((0,0,0))
         
         #Draw rectangles to insert the boxes in
         pygame.draw.rect(self.surface, (66, 150, 178), self.areas[0], 1)
         pygame.draw.rect(self.surface, (66, 150, 178), self.areas[1], 1)
         pygame.draw.rect(self.surface, (66, 150, 178), self.areas[2], 1)
     
-    
-    #Controll the boxes is being selectede or not  
-    def check_the_boxes(self):
-        self.boxes[0].collide(self.hands)
-        self.boxes[1].collide(self.hands)
-        self.boxes[2].collide(self.hands)   
+    def process_boxes(self):
+        #Check accuracy of the boxes
+        self.check_accuracy()
 
+        for i in range(len(self.boxes)):
+            self.boxes[i].process_state(self.hands)
+            self.boxes[i].draw(self.surface)
+
+    #Set the background to green if all boxes is inside a rectangle
     def check_accuracy(self):
         nr_of_boxes_true = 0
 
@@ -85,18 +71,14 @@ class Game:
         #Draw landmarks and process hand positions
         self.frame = self.hands.process_hands(self.frame)
 
-        # --- LAB 1: hold over to select & pinch to select ---
-        #Compare hand position to boxes
-        #Change color saturation if marker is covering one of the boxes
-        self.check_the_boxes()
-        
+        #Process boxes
+        self.process_boxes()
+
+        #Draw
         self.draw()       
         
         #Draw hand marker based on hand position
         self.hands.draw_marker(self.surface)
-
-        #Function which checks the accuracy of all boxes
-        #check_accuracy()
         
         #Show webcam with landmarks on screen
         cv2.imshow("Frame", cv2.flip(self.frame, 1))

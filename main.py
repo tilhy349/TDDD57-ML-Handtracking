@@ -9,11 +9,6 @@ from settings import *
 # Initialize pygame
 pygame.init()
 
-# display_info = pygame.display.Info()
-# size = width, height = display_info.current_w, display_info.current_h
-# os.environ['SDL_VIDEO_WINDOW_POS'] = str(width) + ",0"
-# screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), HWSURFACE | DOUBLEBUF | NOFRAME)
-#os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (100,32) # windows position
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -41,6 +36,12 @@ def user_events():
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+            
+            elif event.key == pygame.K_1:
+                #RESET
+                reset = True
+        
+        
 
 #START OF MAIN-LOOP
     
