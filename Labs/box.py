@@ -126,10 +126,10 @@ class Box:
             self.color = self.color_org
         
         #Draw all hitbox
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
-        pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_top, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_right, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_bottom, 1)
+        #pygame.draw.rect(surface, (100, 0, 100), self.deselect_rect_left, 1)
         
         #Draw the box
         pygame.draw.rect(surface, self.color, self.rect)
