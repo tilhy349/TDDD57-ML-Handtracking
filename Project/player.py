@@ -17,7 +17,6 @@ class Player:
         self.end_pos = pygame.Vector2(0.0, 0.0)
         self.curr_pos = pygame.Vector2(400.0, 300.0)
         self.moving_dir = pygame.Vector2(0.0, 0.0)
-        self.delay = 1 #1 second delay
     
     def draw_player(self, surface):
         pygame.draw.rect(surface, (255,0,0), self.hitbox)
@@ -31,8 +30,6 @@ class Player:
         
         if self.moving_dir.length() > 0:
             self.moving_dir.normalize_ip()
-
-        #print("Dir ", self.moving_dir)
      
     #Update player position
     def move_player(self):
@@ -40,16 +37,21 @@ class Player:
 
         displacement = self.moving_dir * self.velocity
         vec = self.end_pos - self.curr_pos
-        #Är displacement längre än avståndet jag har kvar att gå
+        #Is the displacement longer than the distance left to end_pos
         if displacement.length() < vec.length():
             self.curr_pos = self.curr_pos + displacement
         else:
             self.curr_pos = self.end_pos
         
+        #BOUNDARIES
         if self.curr_pos.y < PLAYER_LIMIT_UP:
             self.curr_pos.y = PLAYER_LIMIT_UP
         elif self.curr_pos.y > PLAYER_LIMIT_DOWN:
             self.curr_pos.y = PLAYER_LIMIT_DOWN
+        if self.curr_pos.x > SCREEN_WIDTH - 20:
+            self.curr_pos.x = SCREEN_WIDTH - 20
+        elif self.curr_pos.x < 10:
+            self.curr_pos.x = 10
         
         self.hitbox.update(self.curr_pos.x, self.curr_pos.y, self.width, self.height)
        
