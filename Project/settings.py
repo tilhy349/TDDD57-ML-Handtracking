@@ -3,7 +3,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 #Limits for the player movement area
-PLAYER_LIMIT_UP = 200
+PLAYER_LIMIT_UP = 50
 PLAYER_LIMIT_DOWN = 370
 
 #Scaling for the hand display
@@ -16,6 +16,9 @@ X_DISPLACEMENT = 200
 #Specified delay for updating player movement
 DELAY = 300
 
+#Timer for state changes
+TIMER_LIMIT = 2000
+
 #Settings for gesture
 import enum
 class Gesture(enum.Enum):
@@ -24,6 +27,7 @@ class Gesture(enum.Enum):
     CLOSE = 3
     PEACE = 4
 
+#Settings for game state
 class State(enum.Enum):
     MENU = 1
     RUNNING = 2
@@ -34,3 +38,17 @@ PEACE_THRESHOLD = 30
 CLOSE_THRESHOLD = 25
 PINCH_THRESHOLD = 30
 START_END_THRESHOLD = 45
+
+#Map settings
+MAP_NUMBER_COLS = 8
+
+MAP_BLOCK_WIDTH = int(SCREEN_WIDTH / MAP_NUMBER_COLS)
+MAP_BLOCK_HEIGHT = 50
+
+#Spawn rates
+SPAWN_RATE_OBJECT = 0.3
+SPAWN_RATE_COIN = 0.3
+SPAWN_RATE_BLOCK = 0.7
+
+#Moovement speed
+MAP_SPEED = 0.8

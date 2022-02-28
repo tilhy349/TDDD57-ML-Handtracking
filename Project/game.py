@@ -46,6 +46,8 @@ class Game:
             pygame.draw.rect(self.surface, (100, 0, 0), pygame.Rect(200, 200, 100, 100))
 
         elif self.game_state == State.RUNNING:
+
+            self.map.move_objects()
             #Draw map
             self.map.draw(self.surface)
 
@@ -75,7 +77,7 @@ class Game:
             self.timer = pygame.time.get_ticks() - self.timer_start 
             print("current time: ", self.timer)    
 
-        if self.timer > 4000 :
+        if self.timer > TIMER_LIMIT :
             self.timer = 0
             self.timer_start = pygame.time.get_ticks()
             if self.game_state == State.MENU:
