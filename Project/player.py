@@ -9,8 +9,6 @@ class Player:
         self.width = 10
         self.height = 10
         self.hitbox = pygame.Rect(0, 0, self.width, self.height)
-        
-        self.velocity = 10 #moving velocity
 
         self.curr_lerp = 0.0 #Current lerp
         self.start_pos = pygame.Vector2(0.0, 0.0)
@@ -29,13 +27,13 @@ class Player:
         self.moving_dir = self.end_pos - self.start_pos
         
         if self.moving_dir.length() > 0:
-            self.moving_dir.normalize_ip()
+            self.moving_dir.normalize_ip() 
      
     #Update player position
     def move_player(self):
         #Calculate the new position
 
-        displacement = self.moving_dir * self.velocity
+        displacement = self.moving_dir * PLAYER_VELOCITY 
         vec = self.end_pos - self.curr_pos
         #Is the displacement longer than the distance left to end_pos
         if displacement.length() < vec.length():

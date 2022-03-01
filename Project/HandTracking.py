@@ -33,14 +33,22 @@ class HandTracking:
         if len(self.results.multi_hand_landmarks) > 1:
             for i in self.right_hand_landmarks:
                 pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
-            for i in self.left_hand_landmarks:
-                pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
+            for inx, i in enumerate(self.left_hand_landmarks):
+                if inx == 8:
+                    pygame.draw.rect(surface, (255,0,0), pygame.Rect(i[0], i[1], size, size))
+                else:
+                    pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
         elif self.results.multi_handedness[0].classification[0].label == "Right":
             for i in self.right_hand_landmarks:
                 pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
         else:
-            for i in self.left_hand_landmarks:
-                pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
+            for inx, i in enumerate(self.left_hand_landmarks):
+                if inx == 8:
+                    pygame.draw.rect(surface, (255,0,0), pygame.Rect(i[0], i[1], size, size))
+                else:
+                    pygame.draw.rect(surface, (0,0,0), pygame.Rect(i[0], i[1], size, size))
+        
+        
                 
 
     def scale_landmarks(self, landmarks):   
@@ -114,11 +122,14 @@ class HandTracking:
 
         if self.start_end_gesture() == Gesture.START_END:
             #print("start och slut gest")
-            return True          
+            return True 
+                 
         elif self.peace_hand_gesture() == Gesture.PEACE:
-            print("peace hand gest")
+            #print("peace hand gest")
+            pass
         elif self.closed_hand_gesture() == Gesture.CLOSE: 
-            print("stängd hand gest")
+            #print("stängd hand gest")
+            pass
         else:
             #print("default gest")
             pass

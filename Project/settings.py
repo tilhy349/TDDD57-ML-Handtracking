@@ -1,6 +1,10 @@
+
 # Define constants for the screen width and height
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+
+#FPS
+FPS = 60
 
 #Limits for the player movement area
 PLAYER_LIMIT_UP = 50
@@ -14,7 +18,8 @@ Y_DISPLACEMENT = 300
 X_DISPLACEMENT = 200
 
 #Specified delay for updating player movement
-DELAY = 300
+DELAY = 200
+PLAYER_VELOCITY = 5
 
 #Timer for state changes
 TIMER_LIMIT = 2000
@@ -50,5 +55,8 @@ SPAWN_RATE_OBJECT = 0.3
 SPAWN_RATE_COIN = 0.3
 SPAWN_RATE_BLOCK = 0.7
 
-#Moovement speed
-MAP_SPEED = 0.8
+#Movement speed
+MAP_SPEED = 1
+MAP_UPDATE_SPEED = 30 
+SPAWN_RATE_ROW = int(2 * MAP_BLOCK_HEIGHT / (MAP_SPEED / MAP_UPDATE_SPEED))
+
