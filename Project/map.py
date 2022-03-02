@@ -13,8 +13,8 @@ class DrawableObject(ABC):
     def draw(self, surface):
         pass
 
-    def update_pos(self):
-        self.pos = pygame.Vector2(self.pos.x, self.pos.y + MAP_SPEED)
+    def update_pos(self, pos):
+        self.pos = pygame.Vector2(self.pos.x, self.pos.y + pos)
         self.hitbox.update(self.pos.x, self.pos.y, MAP_BLOCK_WIDTH, MAP_BLOCK_HEIGHT)
 
 class Coin (DrawableObject):
@@ -54,10 +54,10 @@ class Map:
                 else:
                     self.objects.append(Coin(pygame.Vector2(i, -MAP_BLOCK_HEIGHT - 10)))
     
-    def move_objects(self):
+    def move_objects(self, pos):
         #Update position for each object
         for i in self.objects:
-            i.update_pos()
+            i.update_pos(pos)
             
             #If object is out of bounds, remove object
             if i.pos.y > SCREEN_HEIGHT: 

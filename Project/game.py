@@ -32,6 +32,11 @@ class Game:
 
         self.total_distance = 0
 
+        self.game_speed = 0.1
+        self.last_time = 0
+
+        self.total_movement = 0
+            
         #UI
         self.game_ui_font = pygame.font.Font(pygame.font.get_default_font(), 100)
         self.game_ui_font_small = pygame.font.Font(pygame.font.get_default_font(), 20)
@@ -43,50 +48,60 @@ class Game:
         #Store the current frame from webcam
         _, self.frame = self.cap.read()
     
-    #Drawing all object in the game
-    def draw(self):
-        # Initialing Color
-        self.surface.fill((255,255,255))  
-
-        if self.game_state == State.MENU:
-            self.surface.fill((220, 100, 10))
-            
-            #Render text   
-            self.surface.blit(self.text_game_name,dest=(130, 100))
-            self.surface.blit(self.text_instructions,dest=(160, 250))
+    def draw_running(self):
+        self.surface.fill((255,255,255))
         
-        elif self.game_state == State.RUNNING:
+        #Draw map
+        self.map.draw(self.surface)
 
-            #self.map.move_objects()
-            #Draw map
-            self.map.draw(self.surface)
-
-            #Draw border around hands
-            #pygame.draw will not use alpha
-            #workaround --> create pygame surface, draw rect, blit with transparency
-            pygame.draw.rect(self.surface, (0, 150, 0), pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), 2)
+        #Draw border around hands
+        #pygame.draw will not use alpha
+        #workaround --> create pygame surface, draw rect, blit with transparency
+        pygame.draw.rect(self.surface, (0, 150, 0), pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), 2)
             
-            #Draw the player 
-            self.player.draw_player(self.surface)  
+        #Draw the player 
+        self.player.draw_player(self.surface)  
             
-            #Render text
-            text_coins = self.game_ui_font_small.render("Coins: " + str(self.map.n_coins), True, (0, 0, 0))
-            self.surface.blit(text_coins,dest=(130, 50))
-            text_distance = self.game_ui_font_small.render("Distance: " + str(self.total_distance), True, (0, 0, 0))
-            self.surface.blit(text_distance,dest=(250, 50))
+        #Render ui text
+        text_coins = self.game_ui_font_small.render("Coins: " + str(self.map.n_coins), True, (0, 0, 0))
+        self.surface.blit(text_coins,dest=(130, 50))
+        text_distance = self.game_ui_font_small.render("Distance: " + str(self.total_distance), True, (0, 0, 0))
+        self.surface.blit(text_distance,dest=(250, 50))
+    
+    def draw_loading_bar(self, pos):
+        number = int(self.timer / TIMER_LIMIT * 8)
 
-        else:
-            self.surface.fill((220, 100, 10))
-            #Render text
-            self.surface.blit(self.text_game_over,dest=(130, 100))
+        pygame.draw.rect(self.surface, (0,0,0), pygame.Rect(pos.x, pos.y, 260, 45), 1)
+        
+        for i in range(number):
+            pygame.draw.rect(self.surface, (0,0,0), pygame.Rect(pos.x + 10 + 30 * i, pos.y + 10, 25, 25))
+          
+    def draw_menu(self):
+        self.surface.fill((220, 100, 10))
 
-            text_coins = self.game_ui_font_small.render("You collected " + str(self.map.n_coins) + " coins. Good job!", True, (0, 0, 0))
-            self.surface.blit(text_coins,dest=(130, 250))
-            text_distance = self.game_ui_font_small.render("Total distance is " + str(self.total_distance) + ". Not bad!", True, (0, 0, 0))
-            self.surface.blit(text_distance,dest=(130, 300))
+        #Draw loading bar
+        self.draw_loading_bar(pygame.Vector2(240, 280))
+         
+        #Render text   
+        self.surface.blit(self.text_game_name,dest=(130, 100))
+        self.surface.blit(self.text_instructions,dest=(160, 250))
+             
+    def draw_end(self):
+        # Initialing Color
+        self.surface.fill((220, 100, 10))
 
-        #Draw hand marker based on hand position
-        self.hand_tracking.draw_hands(self.surface)    
+        #Render text
+        self.surface.blit(self.text_game_over,dest=(130, 100))
+
+        text = self.game_ui_font_small.render("You collected " + str(self.map.n_coins) + " coins. Good job!", True, (0, 0, 0))
+        self.surface.blit(text,dest=(130, 250))
+        text = self.game_ui_font_small.render("Total distance is " + str(self.total_distance) + ". Not bad!", True, (0, 0, 0))
+        self.surface.blit(text,dest=(130, 300))
+        text = self.game_ui_font_small.render("Do pinch gesture to play again!", True, (0, 0, 0))
+        self.surface.blit(text,dest=(130, 350))
+
+        #Draw loading bar
+        self.draw_loading_bar(pygame.Vector2(240, 380))
         
     def update_player_movement(self):
         #Update player position according to right hand
@@ -98,10 +113,12 @@ class Game:
         if not self.running_last_frame and timer_running:
             self.timer = 0
             self.timer_start = pygame.time.get_ticks()
-            print("TIMER HAS STARTED")
+            #print("TIMER HAS STARTED")
         elif timer_running:
             self.timer = pygame.time.get_ticks() - self.timer_start 
-            print("current time: ", self.timer)    
+            #print("current time: ", self.timer) 
+        else:
+            self.timer = 0   
 
         if self.timer > TIMER_LIMIT :
             self.timer = 0
@@ -111,12 +128,37 @@ class Game:
                 self.game_state = State.END
             else:
                 self.game_state = State.RUNNING
+                self.reset_game()
 
         self.running_last_frame = timer_running
+
+    def reset_game(self):
+        self.map = Map()
+        self.clock = pygame.time.Clock()
+        self.player = Player()
+
+        self.total_distance = 0
+        self.last_time = pygame.time.get_ticks() * 0.001
+        
+    def update_map_movement(self):
+        dt = pygame.time.get_ticks() * 0.001 - self.last_time
+        dt *= 60
+        self.last_time = pygame.time.get_ticks() * 0.001
+
+        pos = self.game_speed * dt
+        self.total_movement += pos
+
+        #Move objects down
+        self.map.move_objects(pos)
+        self.total_distance += pos
+
+        #Spawn new row if there is enough space
+        if self.total_movement >= 2 * MAP_BLOCK_HEIGHT:
+            self.total_movement = 0
+            self.map.createRow()
+        
    
     def update(self):
-        #60 fps
-        self.clock.tick(FPS)
 
         self.load_camera()
 
@@ -129,18 +171,31 @@ class Game:
         #Timer for start/end gesture
         self.timer_start_end(timerRunning)
 
-        #Update player pos
-        self.player.move_player()
+        #Draw depending on the current state
+        if self.game_state == State.MENU:
+            self.draw_menu()
+        elif self.game_state == State.RUNNING:
+             
+            #Check time and update movement speed
+            self.update_map_movement()
+            
+            #Update player pos
+            self.player.move_player() 
 
-        #Drawing all object in the game
-        self.draw()       
-        
-        #Controlling if the player have collied with a block, true -> end game
-        if self.map.block_collision(self.player.hitbox):
-            self.game_state = State.END
+            self.draw_running()
+
+            #Controlling if the player have collided with a block, true -> end game
+            if self.map.block_collision(self.player.hitbox):
+                self.game_state = State.END    
+        else:
+            self.draw_end()
+
+        #Draw hand marker based on hand position
+        self.hand_tracking.draw_hands(self.surface) 
         
         #Show webcam with landmarks on screen
         cv2.imshow("Frame", cv2.flip(self.frame, 1))
         cv2.waitKey(1) 
 
         pygame.display.update()
+        self.clock.tick(FPS)
