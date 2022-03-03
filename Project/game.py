@@ -30,6 +30,8 @@ class Game:
         self.game_speed = GAME_SPEED_INITIAL
         self.last_time = 0
 
+        self.timer = 0
+
     def load_camera(self):
         #Store the current frame from webcam
         _, self.frame = self.cap.read()
@@ -105,9 +107,6 @@ class Game:
             
             self.draw_running()
             self.ui.draw_ui_game(self.map.n_coins, self.map.total_distance)
-
-            #Check time and update movement speed
-            self.map.update_map_movement(self.game_speed, dt)
             
             #Update player pos
             self.player.move_player(dt) 
@@ -121,7 +120,13 @@ class Game:
             
             #Controlling if the player have collided with a block, true -> end game
             if self.map.block_collision(self.player.hitbox, self.powerup.current_powerup == Powerup.INVISIBLE):
-                self.game_state = State.END    
+                self.game_state = State.END   
+            if self.powerup.current_powerup != Powerup.SLOWMOTION:
+                #Check time and update movement speed
+                self.map.update_map_movement(self.game_speed, dt)
+            else:
+                self.map.update_map_movement(SLOWMOTION_SPEED, dt)
+
         else:
             self.ui.draw_ui_end(self.map.n_coins, self.map.total_distance, self.timer)
 

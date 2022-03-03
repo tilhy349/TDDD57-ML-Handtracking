@@ -56,7 +56,8 @@ def user_events():
             #Call function in game
             game.update_player_movement()  
 
-        if event.type == update_map_speed and game.game_state == State.RUNNING:
+        if (event.type == update_map_speed and game.game_state == State.RUNNING 
+            and game.powerup.current_powerup == Powerup.SLOWMOTION):
             game.game_speed += SPEED_UPDATE_STEP
 
 
