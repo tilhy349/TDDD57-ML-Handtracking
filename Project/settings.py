@@ -38,6 +38,12 @@ class State(enum.Enum):
     RUNNING = 2
     END = 3
 
+class Powerup(enum.Enum):
+    INVISIBLE = 1
+    SLOWMOTION = 2
+    SPAWN_COINS = 3
+    DEFAULT = 4
+
 #Thresholds for hand gestures
 PEACE_THRESHOLD = 50
 CLOSE_THRESHOLD = 25
@@ -58,3 +64,10 @@ SPAWN_RATE_BLOCK = 0.7
 #Map movement setting
 GAME_SPEED_UPDATE = 3000
 SPEED_UPDATE_STEP = 0.1
+
+#For powerup with the left hand
+MAX_POWERUPS = 3
+#Nr of coins is nneded to get a power "box"
+POWERUP_COST = 3
+
+POWERUP_TIME_LIMIT = 5

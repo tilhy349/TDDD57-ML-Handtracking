@@ -31,13 +31,16 @@ class Block (DrawableObject):
     
     def draw(self, surface):
         #print("Drawing box")
-        pygame.draw.rect(surface, (200, 0, 30), self.hitbox)
+        pygame.draw.rect(surface, (155, 103, 60), self.hitbox)
 
 
 class Map:
     def __init__(self):
         self.objects = []  
         self.n_coins = 0
+        self.total_distance = 0
+        
+        self.block_movement = 0
 
     def createRow(self):
         #Spawn rate, spawn or not? what to spawn?
@@ -54,6 +57,22 @@ class Map:
                 else:
                     self.objects.append(Coin(pygame.Vector2(i, -MAP_BLOCK_HEIGHT - 10)))
     
+    
+    def update_map_movement(self, game_speed, dt):
+        
+        pos = game_speed * dt
+        self.block_movement += pos
+        self.total_distance += pos
+
+        #Move objects down
+        self.move_objects(pos)
+
+        #Spawn new row if there is enough space
+        if self.block_movement >= 2 * MAP_BLOCK_HEIGHT:
+            self.block_movement = 0
+            self.createRow()
+    
+    
     def move_objects(self, pos):
         #Update position for each object
         for i in self.objects:
@@ -63,23 +82,23 @@ class Map:
             if i.pos.y > SCREEN_HEIGHT: 
                 self.objects.remove(i)
     
-    def block_collision(self, player_hitbox):
+    def block_collision(self, player_hitbox, invisible):
         
         #Check collision between all blocks and player hitbox
         for i in self.objects:
-            if isinstance(i, Block) and i.hitbox.colliderect(player_hitbox):
+            if not invisible and isinstance(i, Block) and i.hitbox.colliderect(player_hitbox):
                 return True
-            elif i.hitbox.colliderect(player_hitbox):
+            elif isinstance(i, Coin) and i.hitbox.colliderect(player_hitbox):
                 self.n_coins += 1
                 self.objects.remove(i)
-                
 
         return False
+        
 
     def draw(self, surface):  
         #Draw borders
-        for i in range(0, SCREEN_WIDTH, MAP_BLOCK_WIDTH):
-            pygame.draw.line(surface, (0,0,200), (i,0), (i,SCREEN_HEIGHT))
+        #for i in range(0, SCREEN_WIDTH, MAP_BLOCK_WIDTH):
+            #pygame.draw.line(surface, (0,0,200), (i,0), (i,SCREEN_HEIGHT))
 
         #Draw all objects in list
         for i in self.objects:

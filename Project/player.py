@@ -6,18 +6,19 @@ from settings import *
 class Player:
 
     def __init__(self):
-        self.width = 10
-        self.height = 10
+        self.width = 15
+        self.height = 15
         self.hitbox = pygame.Rect(0, 0, self.width, self.height)
 
-        self.curr_lerp = 0.0 #Current lerp
         self.start_pos = pygame.Vector2(0.0, 0.0)
         self.end_pos = pygame.Vector2(0.0, 0.0)
         self.curr_pos = pygame.Vector2(400.0, 300.0)
         self.moving_dir = pygame.Vector2(0.0, 0.0)
+
+        self.color = (255, 0, 0)
     
     def draw_player(self, surface):
-        pygame.draw.rect(surface, (255,0,0), self.hitbox)
+        pygame.draw.rect(surface, self.color, self.hitbox)
 
     #Update the direction which the palyer is moving towards
     #This is called each time the timer passes a delay value
@@ -30,10 +31,11 @@ class Player:
             self.moving_dir.normalize_ip() 
      
     #Update player position
-    def move_player(self):
+    def move_player(self, dt):
         #Calculate the new position
+        pos = PLAYER_VELOCITY * dt
 
-        displacement = self.moving_dir * PLAYER_VELOCITY 
+        displacement = self.moving_dir * pos #PLAYER_VELOCITY 
         vec = self.end_pos - self.curr_pos
         #Is the displacement longer than the distance left to end_pos
         if displacement.length() < vec.length():

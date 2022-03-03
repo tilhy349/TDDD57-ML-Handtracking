@@ -76,6 +76,9 @@ class HandTracking:
         return [SCREEN_WIDTH - int(self.player_new_pos[0] * SCREEN_WIDTH), int(self.player_new_pos[1] * SCREEN_HEIGHT)]
 
     def start_end_gesture(self):
+        if not self.results.multi_hand_landmarks or len(self.results.multi_hand_landmarks) < 2:
+            return Gesture.DEFAULT
+
         distRight = math.hypot(self.right_hand_landmarks[8][0] - self.right_hand_landmarks[4][0],
             self.right_hand_landmarks[8][1] - self.right_hand_landmarks[4][1])
         distLeft = math.hypot(self.left_hand_landmarks[8][0] - self.left_hand_landmarks[4][0],
@@ -134,11 +137,10 @@ class HandTracking:
     def process_hand_gestures(self):
         #Make sure landmarks is not empty
         if len(self.left_hand_landmarks) == 0 or len(self.right_hand_landmarks) == 0:
-            return False
-
+            return
+          
         if self.start_end_gesture() == Gesture.START_END:
             self.current_gesture = Gesture.START_END
-            return True 
                  
         elif self.peace_hand_gesture() == Gesture.PEACE:
             #print("peace hand gest")
@@ -149,8 +151,6 @@ class HandTracking:
         else:
             #print("default gest")
             self.current_gesture = Gesture.DEFAULT
-            
-        return False
             
     
     def process_hands(self, frame):
@@ -177,7 +177,6 @@ class HandTracking:
                 else:
                     self.player_new_pos = [hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y]
                     self.left_hand_landmarks = self.scale_landmarks(hand_landmarks.landmark)
-
                 
                 #draw the the landmarks on the hand in the video
                 mp_drawing.draw_landmarks(
