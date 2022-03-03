@@ -22,7 +22,7 @@ DELAY = 200
 PLAYER_VELOCITY = 5
 
 #Timer for state changes
-TIMER_LIMIT = 2000
+TIMER_LIMIT = 3
 
 #Settings for gesture
 import enum
@@ -62,6 +62,7 @@ SPAWN_RATE_COIN = 0.3
 SPAWN_RATE_BLOCK = 0.7
 
 #Map movement setting
+GAME_SPEED_INITIAL = 1
 GAME_SPEED_UPDATE = 3000
 SPEED_UPDATE_STEP = 0.1
 
