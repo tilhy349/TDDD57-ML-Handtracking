@@ -19,7 +19,7 @@ class HandTracking:
 
         self.results = None
 
-        self.player_new_pos = [0, 0]
+        self.player_new_pos = pygame.Vector2(0, 0)
 
         self.right_hand_landmarks = []
         self.left_hand_landmarks = []
@@ -49,7 +49,7 @@ class HandTracking:
             or len(self.results.multi_hand_landmarks) > 1):
 
             for i in self.right_hand_landmarks:
-                pygame.draw.rect(surface, right_color, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
+                pygame.draw.rect(surface, right_color, pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
 
         #If hand label is left or if two hands are in play, draw left hand
         if (self.results.multi_handedness[0].classification[0].label == "Left"
@@ -57,9 +57,9 @@ class HandTracking:
 
              for inx, i in enumerate(self.left_hand_landmarks):
                 if inx == 8:
-                    pygame.draw.rect(surface, COLOR_ORIGINAL, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
+                    pygame.draw.rect(surface, COLOR_ORIGINAL, pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
                 else:
-                    pygame.draw.rect(surface, left_color, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
+                    pygame.draw.rect(surface, left_color, pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
                 
 
     def scale_landmarks(self, landmarks):   
@@ -67,32 +67,32 @@ class HandTracking:
         #Scale based on settings
         for i in landmarks:
             #tempList.append([SCREEN_WIDTH - int(i.x * SCREEN_WIDTH), int(i.y * SCREEN_HEIGHT)])
-            tempList.append([X_SCALE - int(i.x* X_SCALE) + X_DISPLACEMENT, int(i.y * Y_SCALE) + Y_DISPLACEMENT])
+            tempList.append(pygame.Vector2(X_SCALE - int(i.x* X_SCALE) + X_DISPLACEMENT, int(i.y * Y_SCALE) + Y_DISPLACEMENT))
         
         return tempList
     
     #Retuning the position of right hand (pekfingres knoge)
     def retrieve_player_pos(self):
-        return [SCREEN_WIDTH - int(self.player_new_pos[0] * SCREEN_WIDTH), int(self.player_new_pos[1] * SCREEN_HEIGHT)]
+        return [SCREEN_WIDTH - int(self.player_new_pos.x * SCREEN_WIDTH), int(self.player_new_pos.y * SCREEN_HEIGHT)]
 
     def start_end_gesture(self):
         if not self.results.multi_hand_landmarks or len(self.results.multi_hand_landmarks) < 2:
             return Gesture.DEFAULT
 
-        distRight = math.hypot(self.right_hand_landmarks[8][0] - self.right_hand_landmarks[4][0],
-            self.right_hand_landmarks[8][1] - self.right_hand_landmarks[4][1])
-        distLeft = math.hypot(self.left_hand_landmarks[8][0] - self.left_hand_landmarks[4][0],
-            self.left_hand_landmarks[8][1] - self.left_hand_landmarks[4][1])
+        distRight = math.hypot(self.right_hand_landmarks[8].x - self.right_hand_landmarks[4].x,
+            self.right_hand_landmarks[8].y - self.right_hand_landmarks[4].y)
+        distLeft = math.hypot(self.left_hand_landmarks[8].x - self.left_hand_landmarks[4].x,
+            self.left_hand_landmarks[8].y - self.left_hand_landmarks[4].y)
             
-        distStartEnd = math.hypot(self.left_hand_landmarks[4][0] - self.right_hand_landmarks[4][0],
-            self.left_hand_landmarks[4][1] - self.right_hand_landmarks[4][1])
+        distStartEnd = math.hypot(self.left_hand_landmarks[4].x - self.right_hand_landmarks[4].x,
+            self.left_hand_landmarks[4].y - self.right_hand_landmarks[4].y)
          
-        conditionRight = (self.right_hand_landmarks[12][1] < self.right_hand_landmarks[9][1] and
-                     self.right_hand_landmarks[16][1] < self.right_hand_landmarks[13][1] and
-                     self.right_hand_landmarks[20][1] < self.right_hand_landmarks[17][1])
-        conditionLeft = (self.left_hand_landmarks[12][1] < self.left_hand_landmarks[9][1] and
-                     self.left_hand_landmarks[16][1] < self.left_hand_landmarks[13][1] and
-                     self.left_hand_landmarks[20][1] < self.left_hand_landmarks[17][1])
+        conditionRight = (self.right_hand_landmarks[12].y < self.right_hand_landmarks[9].y and
+                     self.right_hand_landmarks[16].y < self.right_hand_landmarks[13].y and
+                     self.right_hand_landmarks[20].y < self.right_hand_landmarks[17].y)
+        conditionLeft = (self.left_hand_landmarks[12].y < self.left_hand_landmarks[9].y and
+                     self.left_hand_landmarks[16].y < self.left_hand_landmarks[13].y and
+                     self.left_hand_landmarks[20].y < self.left_hand_landmarks[17].y)
         
         if (distRight < PINCH_THRESHOLD and distLeft < PINCH_THRESHOLD and
              distStartEnd < START_END_THRESHOLD and conditionRight and conditionLeft): 
@@ -103,16 +103,16 @@ class HandTracking:
         #dist =  math.hypot(self.right_hand_landmarks[14][0] - self.right_hand_landmarks[4][0],
         #self.right_hand_landmarks[14][1] - self.right_hand_landmarks[4][1])
 
-        isPeace = (self.right_hand_landmarks[8][1] < self.right_hand_landmarks[7][1] and
-                   self.right_hand_landmarks[7][1] < self.right_hand_landmarks[6][1] and
-                   self.right_hand_landmarks[6][1] < self.right_hand_landmarks[5][1] and
+        isPeace = (self.right_hand_landmarks[8].y < self.right_hand_landmarks[7].y and
+                   self.right_hand_landmarks[7].y < self.right_hand_landmarks[6].y and
+                   self.right_hand_landmarks[6].y < self.right_hand_landmarks[5].y and
                    
-                   self.right_hand_landmarks[12][1] < self.right_hand_landmarks[11][1] and 
-                   self.right_hand_landmarks[11][1] < self.right_hand_landmarks[10][1] and
-                   self.right_hand_landmarks[10][1] < self.right_hand_landmarks[9][1] and
+                   self.right_hand_landmarks[12].y < self.right_hand_landmarks[11].y and 
+                   self.right_hand_landmarks[11].y < self.right_hand_landmarks[10].y and
+                   self.right_hand_landmarks[10].y < self.right_hand_landmarks[9].y and
                    
-                   self.right_hand_landmarks[16][1] > self.right_hand_landmarks[13][1] and
-                   self.right_hand_landmarks[20][1] > self.right_hand_landmarks[17][1])
+                   self.right_hand_landmarks[16].y > self.right_hand_landmarks[13].y and
+                   self.right_hand_landmarks[20].y > self.right_hand_landmarks[17].y)
         
         if isPeace: #and dist < PEACE_THRESHOLD :
             return Gesture.PEACE
@@ -121,10 +121,10 @@ class HandTracking:
     
     def closed_hand_gesture(self):
         
-        isClosed = (self.right_hand_landmarks[8][1] > self.right_hand_landmarks[5][1] and
-                    self.right_hand_landmarks[12][1] > self.right_hand_landmarks[9][1] and 
-                    self.right_hand_landmarks[16][1] > self.right_hand_landmarks[13][1] and
-                    self.right_hand_landmarks[20][1] > self.right_hand_landmarks[17][1])
+        isClosed = (self.right_hand_landmarks[8].y > self.right_hand_landmarks[5].y and
+                    self.right_hand_landmarks[12].y > self.right_hand_landmarks[9].y and 
+                    self.right_hand_landmarks[16].y > self.right_hand_landmarks[13].y and
+                    self.right_hand_landmarks[20].y > self.right_hand_landmarks[17].y)
         
         if isClosed: 
             return Gesture.CLOSE
@@ -171,7 +171,7 @@ class HandTracking:
                 if hand_label == "Right": 
                     self.right_hand_landmarks = self.scale_landmarks(hand_landmarks.landmark)          
                 else:
-                    self.player_new_pos = [hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y]
+                    self.player_new_pos = pygame.Vector2(hand_landmarks.landmark[8].x, hand_landmarks.landmark[8].y)
                     self.left_hand_landmarks = self.scale_landmarks(hand_landmarks.landmark)
                 
                 #draw the the landmarks on the hand in the video
