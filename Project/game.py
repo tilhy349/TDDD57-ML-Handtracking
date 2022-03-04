@@ -1,6 +1,4 @@
 import pygame
-import time
-import random
 import cv2
 import mediapipe as mp
 from HandTracking import HandTracking
@@ -112,8 +110,8 @@ class Game:
             self.player.move_player(dt) 
             
             #Set and process current power up
-            self.powerup.set_powerup(self.hand_tracking.current_gesture)
-            self.map.n_coins = self.powerup.process_powerup(dt, self.map.n_coins)
+            self.powerup.set(self.hand_tracking.current_gesture)
+            self.map.n_coins = self.powerup.process(dt, self.map.n_coins)
 
             #Update player color depending on powerup
             self.player.color = self.powerup.player_color

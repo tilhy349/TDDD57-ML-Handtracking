@@ -28,19 +28,19 @@ class HandTracking:
 
     #Not the best solution, TODO: fix
     def draw_hands(self, surface):
-        size = 10
-        left_color = (0,0,0)
-        right_color = (0,0,0)
+
+        left_color = (0, 0, 0)
+        right_color = (0, 0, 0)
 
         #Set color depending on current gesture
         if self.current_gesture == Gesture.START_END:
-            left_color = (0, 255, 0)
-            right_color = (0, 255, 0)
+            left_color = COLOR_START_END
+            right_color = COLOR_START_END
         elif self.current_gesture == Gesture.PEACE:
-            right_color = (255, 0, 255)
+            right_color = COLOR_PEACE
         elif self.current_gesture == Gesture.CLOSE:
-            right_color = (10, 10, 255)
-            
+            right_color = COLOR_CLOSE
+
         if not self.results.multi_hand_landmarks:
             return
 
@@ -49,7 +49,7 @@ class HandTracking:
             or len(self.results.multi_hand_landmarks) > 1):
 
             for i in self.right_hand_landmarks:
-                pygame.draw.rect(surface, right_color, pygame.Rect(i[0], i[1], size, size))
+                pygame.draw.rect(surface, right_color, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
 
         #If hand label is left or if two hands are in play, draw left hand
         if (self.results.multi_handedness[0].classification[0].label == "Left"
@@ -57,9 +57,9 @@ class HandTracking:
 
              for inx, i in enumerate(self.left_hand_landmarks):
                 if inx == 8:
-                    pygame.draw.rect(surface, (255,0,0), pygame.Rect(i[0], i[1], size, size))
+                    pygame.draw.rect(surface, COLOR_ORIGINAL, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
                 else:
-                    pygame.draw.rect(surface, left_color, pygame.Rect(i[0], i[1], size, size))
+                    pygame.draw.rect(surface, left_color, pygame.Rect(i[0], i[1], SIZE_HAND_RECT, SIZE_HAND_RECT))
                 
 
     def scale_landmarks(self, landmarks):   
@@ -121,16 +121,12 @@ class HandTracking:
     
     def closed_hand_gesture(self):
         
-        #dist =  math.hypot(self.right_hand_landmarks[14][0] - self.right_hand_landmarks[4][0],
-        #self.right_hand_landmarks[14][1] - self.right_hand_landmarks[4][1])
-        
         isClosed = (self.right_hand_landmarks[8][1] > self.right_hand_landmarks[5][1] and
                     self.right_hand_landmarks[12][1] > self.right_hand_landmarks[9][1] and 
                     self.right_hand_landmarks[16][1] > self.right_hand_landmarks[13][1] and
                     self.right_hand_landmarks[20][1] > self.right_hand_landmarks[17][1])
-             #self.right_hand_landmarks[4][0] < self.right_hand_landmarks[6][0])
         
-        if isClosed : #and dist < CLOSE_THRESHOLD: 
+        if isClosed: 
             return Gesture.CLOSE
         return Gesture.DEFAULT
        
