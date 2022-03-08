@@ -15,10 +15,30 @@ class Player:
         self.curr_pos = pygame.Vector2(400.0, 300.0)
         self.moving_dir = pygame.Vector2(0.0, 0.0)
 
-        self.color = (255, 0, 0)
+        #self.player_image = IMAGE_PLAYER_DEFAULT
+        self.player_image = PlayerImage.DEFAULT
     
     def draw_player(self, surface):
-        pygame.draw.rect(surface, self.color, self.hitbox)
+        image = IMAGE_PLAYER_DEFAULT
+        
+        #Dino going to the left
+        if self.moving_dir.x < 0:
+            if self.player_image == PlayerImage.CLOSE:
+                image = IMAGE_PLAYER_CLOSE_MIRROR
+            elif self.player_image == PlayerImage.PEACE:
+                image = IMAGE_PLAYER_PEACE_MIRROR
+            else:
+                image = IMAGE_PLAYER_DEFAULT_MIRROR
+        #Dino going to the right
+        else:
+            if self.player_image == PlayerImage.CLOSE:
+                image = IMAGE_PLAYER_CLOSE
+            elif self.player_image == PlayerImage.PEACE:
+                image = IMAGE_PLAYER_PEACE
+            else:
+                image = IMAGE_PLAYER_DEFAULT
+            
+        surface.blit(image, self.curr_pos)
 
     #Update the direction which the palyer is moving towards
     #This is called each time the timer passes a delay value
@@ -33,7 +53,7 @@ class Player:
     #Update player position
     def move_player(self, dt):
         #Calculate the new position
-        pos = PLAYER_VELOCITY * dt
+        pos = PLAYER_VELOCITY * dt        
 
         displacement = self.moving_dir * pos #PLAYER_VELOCITY 
         vec = self.end_pos - self.curr_pos
@@ -48,10 +68,10 @@ class Player:
             self.curr_pos.y = PLAYER_LIMIT_UP
         elif self.curr_pos.y > PLAYER_LIMIT_DOWN:
             self.curr_pos.y = PLAYER_LIMIT_DOWN
-        if self.curr_pos.x > SCREEN_WIDTH - 20:
-            self.curr_pos.x = SCREEN_WIDTH - 20
-        elif self.curr_pos.x < 10:
-            self.curr_pos.x = 10
+        if self.curr_pos.x > SCREEN_WIDTH - GAME_DISPLACEMENT - self.width:
+            self.curr_pos.x = SCREEN_WIDTH - GAME_DISPLACEMENT - self.width
+        elif self.curr_pos.x < GAME_DISPLACEMENT:
+            self.curr_pos.x = GAME_DISPLACEMENT
         
         self.hitbox.update(self.curr_pos.x, self.curr_pos.y, self.width, self.height)
        

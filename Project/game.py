@@ -30,6 +30,15 @@ class Game:
 
         self.timer = 0
 
+        self.image_point = pygame.transform.scale( pygame.image.load("Project\Images\Point.png"), (10, 10))
+
+    def blit_alpha(self, target, source, location, opacity):
+        temp = pygame.Surface((source.get_width(), source.get_height())).convert()
+        temp.blit(target, (-location[0], -location[1]))
+        temp.blit(source, (0, 0))
+        temp.set_alpha(opacity)
+        target.blit(temp, location)
+
     def load_camera(self):
         #Store the current frame from webcam
         _, self.frame = self.cap.read()
@@ -40,11 +49,16 @@ class Game:
         #Draw map
         self.map.draw(self.surface)
 
+        #pygame.draw.circle(self.surface, (255, 0, 0) , self.hand_tracking.retrieve_player_pos() , 5)
+        #self.surface.blit(self.image_point, self.hand_tracking.retrieve_player_pos())
+        self.blit_alpha(self.surface, self.image_point, self.hand_tracking.retrieve_player_pos(), 140)
+
         #Draw border around hands
         #pygame.draw will not use alpha
         #workaround --> create pygame surface, draw rect, blit with transparency
         pygame.draw.rect(self.surface, (0, 150, 0), pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), 2)
         
+        #self.surface.blit(pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), [X_DISPLACEMENT, Y_DISPLACEMENT])
         #Draw the power up bar
         self.ui.draw_power_bar(self.powerup.available_powerups)
             
@@ -114,7 +128,7 @@ class Game:
             self.map.n_coins = self.powerup.process(dt, self.map.n_coins)
 
             #Update player color depending on powerup
-            self.player.color = self.powerup.player_color
+            self.player.player_image = self.powerup.player_image
             
             #Controlling if the player have collided with a block, true -> end game
             if self.map.block_collision(self.player.hitbox, self.powerup.current_powerup == Powerup.INVISIBLE):

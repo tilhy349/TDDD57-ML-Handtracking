@@ -57,7 +57,7 @@ class HandTracking:
 
              for inx, i in enumerate(self.left_hand_landmarks):
                 if inx == 8:
-                    pygame.draw.rect(surface, COLOR_ORIGINAL, pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
+                    pygame.draw.rect(surface, (255, 0, 0), pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
                 else:
                     pygame.draw.rect(surface, left_color, pygame.Rect(i.x, i.y, SIZE_HAND_RECT, SIZE_HAND_RECT))
                 
@@ -100,8 +100,6 @@ class HandTracking:
         return Gesture.DEFAULT
 
     def peace_hand_gesture(self):
-        #dist =  math.hypot(self.right_hand_landmarks[14][0] - self.right_hand_landmarks[4][0],
-        #self.right_hand_landmarks[14][1] - self.right_hand_landmarks[4][1])
 
         isPeace = (self.right_hand_landmarks[8].y < self.right_hand_landmarks[7].y and
                    self.right_hand_landmarks[7].y < self.right_hand_landmarks[6].y and
@@ -111,10 +109,10 @@ class HandTracking:
                    self.right_hand_landmarks[11].y < self.right_hand_landmarks[10].y and
                    self.right_hand_landmarks[10].y < self.right_hand_landmarks[9].y and
                    
-                   self.right_hand_landmarks[16].y > self.right_hand_landmarks[13].y and
+                   self.right_hand_landmarks[16].y > self.right_hand_landmarks[14].y and
                    self.right_hand_landmarks[20].y > self.right_hand_landmarks[17].y)
         
-        if isPeace: #and dist < PEACE_THRESHOLD :
+        if isPeace: 
             return Gesture.PEACE
         return Gesture.DEFAULT
     
@@ -134,18 +132,22 @@ class HandTracking:
         #Make sure landmarks is not empty
         if len(self.left_hand_landmarks) == 0 or len(self.right_hand_landmarks) == 0:
             return
+
+        #Make sure the right hand is in play
+        if (self.results.multi_hand_landmarks and (self.results.multi_handedness[0].classification[0].label == "Right"
+            or len(self.results.multi_hand_landmarks) > 1)):
+            rightHandPresent = True
+        else:
+            rightHandPresent = False
           
         if self.start_end_gesture() == Gesture.START_END:
             self.current_gesture = Gesture.START_END
                  
-        elif self.peace_hand_gesture() == Gesture.PEACE:
-            #print("peace hand gest")
+        elif rightHandPresent and self.peace_hand_gesture() == Gesture.PEACE:
             self.current_gesture = Gesture.PEACE
-        elif self.closed_hand_gesture() == Gesture.CLOSE: 
-            #print("stängd hand gest")
+        elif rightHandPresent and self.closed_hand_gesture() == Gesture.CLOSE: 
             self.current_gesture = Gesture.CLOSE
         else:
-            #print("default gest")
             self.current_gesture = Gesture.DEFAULT
             
     

@@ -17,8 +17,6 @@ pygame.init()
 
 pygame.font.init()
 
-
-
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
