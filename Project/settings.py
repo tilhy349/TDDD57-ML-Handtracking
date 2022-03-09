@@ -30,6 +30,7 @@ PLAYER_LIMIT_DOWN = 400
 #Specified delay for updating player movement
 DELAY = 200
 PLAYER_VELOCITY = 4
+MAX_TAIL = 4
 
 COLOR_ORIGINAL = (0, 0, 0)
 
@@ -162,3 +163,10 @@ IMAGE_CLOSE = pygame.transform.scale( pygame.image.load("Project\Images\Close.pn
 IMAGE_FRAME_SMALL = pygame.transform.scale(pygame.image.load("Project\Images\Frame.png"), (180, 160))
 IMAGE_FRAME_SMALL_WIDTH = 180
 IMAGE_FRAME_SMALL_HEIGHT = 160
+
+def blit_alpha(target, source, location, opacity):
+        temp = pygame.Surface((source.get_width(), source.get_height())).convert()
+        temp.blit(target, (-location[0], -location[1]))
+        temp.blit(source, (0, 0))
+        temp.set_alpha(opacity)
+        target.blit(temp, location)

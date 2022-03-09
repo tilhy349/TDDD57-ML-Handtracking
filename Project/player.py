@@ -14,6 +14,8 @@ class Player:
         self.moving_dir = pygame.Vector2(0.0, 0.0)
 
         self.player_image = PlayerImage.DEFAULT
+
+        self.tail = []
     
     def draw_player(self, surface):
         image = IMAGE_PLAYER_DEFAULT
@@ -34,8 +36,14 @@ class Player:
                 image = IMAGE_PLAYER_PEACE
             else:
                 image = IMAGE_PLAYER_DEFAULT
-            
+
+        #Draw tail
+        for idx, i in enumerate(self.tail):
+            #Tail is more transparent the further away it is
+            blit_alpha(surface, image, i, 25 * idx+1) 
+
         surface.blit(image, self.curr_pos)
+
 
     #Update the direction which the player is moving towards
     #This is called each time the timer passes a delay value
@@ -46,7 +54,7 @@ class Player:
         
         if self.moving_dir.length() > 0:
             self.moving_dir.normalize_ip() 
-     
+    
     #Update player position
     def move_player(self, dt):
         #Calculate the new position
@@ -54,6 +62,11 @@ class Player:
 
         displacement = self.moving_dir * pos #PLAYER_VELOCITY 
         vec = self.end_pos - self.curr_pos
+
+        self.tail.append(self.curr_pos)
+
+        if len(self.tail) > MAX_TAIL:
+            self.tail.pop(0)
 
         #Is the displacement longer than the distance left to end_pos
         if displacement.length() < vec.length():

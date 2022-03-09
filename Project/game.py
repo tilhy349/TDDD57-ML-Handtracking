@@ -31,13 +31,6 @@ class Game:
 
         self.image_point = pygame.transform.scale( pygame.image.load("Project\Images\Point.png"), (10, 10))
 
-    def blit_alpha(self, target, source, location, opacity):
-        temp = pygame.Surface((source.get_width(), source.get_height())).convert()
-        temp.blit(target, (-location[0], -location[1]))
-        temp.blit(source, (0, 0))
-        temp.set_alpha(opacity)
-        target.blit(temp, location)
-
     def load_camera(self):
         #Store the current frame from webcam
         _, self.frame = self.cap.read()
@@ -48,10 +41,10 @@ class Game:
         #Draw map
         self.map.draw(self.surface)
 
-        self.blit_alpha(self.surface, IMAGE_HAND_FRAME, [X_DISPLACEMENT, Y_DISPLACEMENT], 100)
+        blit_alpha(self.surface, IMAGE_HAND_FRAME, [X_DISPLACEMENT, Y_DISPLACEMENT], 100)
 
         #Draw pointer
-        self.blit_alpha(self.surface, self.image_point, self.hand_tracking.retrieve_player_pos(), 140)
+        blit_alpha(self.surface, self.image_point, self.hand_tracking.retrieve_player_pos(), 140)
 
         #Draw the player 
         self.player.draw_player(self.surface)
