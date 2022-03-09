@@ -24,8 +24,8 @@ TIMER_LIMIT = 3
 
 #------ Player settings -----
 #Limits for the player movement area
-PLAYER_LIMIT_UP = 50
-PLAYER_LIMIT_DOWN = 370
+PLAYER_LIMIT_UP = 40
+PLAYER_LIMIT_DOWN = 400
 
 #Specified delay for updating player movement
 DELAY = 200
@@ -59,9 +59,9 @@ class Gesture(enum.Enum):
     PEACE = 4
     
 #Colors for different hand gestures
-COLOR_PEACE = (250, 0, 250)
-COLOR_CLOSE = (10, 10, 255)
-COLOR_START_END = (0, 255, 0)
+COLOR_PEACE = (236, 64, 122)
+COLOR_CLOSE = (48, 79, 254)
+COLOR_START_END = (118, 255, 3)
 
 #Size for hand rects
 SIZE_HAND_RECT = 10
@@ -96,7 +96,6 @@ GAME_SPEED_INITIAL = 1
 GAME_SPEED_UPDATE = 3000
 SPEED_UPDATE_STEP = 0.1
 
-
 #--- Powerup settings ---
 class Powerup(enum.Enum):
     INVISIBLE = 1
@@ -126,9 +125,13 @@ IMAGE_COIN = pygame.transform.scale( pygame.image.load("Project\Images\Coin.png"
 
 IMAGE_BACKGROUND = pygame.transform.scale(pygame.image.load("Project\Images\Background.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 IMAGE_BACKGROUND_MENU = pygame.transform.scale(pygame.image.load("Project\Images\Background_menu.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
-IMAGE_CLOUDS = pygame.transform.scale(pygame.image.load("Project\Images\Clouds.png"), (500, 1400))
+IMAGE_CLOUDS_HEIGHT = 1400
+IMAGE_CLOUDS = pygame.transform.scale(pygame.image.load("Project\Images\Clouds.png"), (498, IMAGE_CLOUDS_HEIGHT))
+IMAGE_CLOUDS_MIRROR = pygame.transform.scale(pygame.image.load("Project\Images\Clouds_mirrored.png"), (498, IMAGE_CLOUDS_HEIGHT))
 
-IMAGE_FRAME = pygame.image.load("Project\Images\Frame.png")
+IMAGE_FRAME_LARGE = pygame.transform.scale(pygame.image.load("Project\Images\Frame.png"), (SCREEN_WIDTH - 150, SCREEN_HEIGHT - 100))
+
+IMAGE_HAND_FRAME = pygame.transform.scale(pygame.image.load("Project\Images\Hand_frame.png"), (X_SCALE, Y_SCALE))
 
 #Font settings
 FONT_HEIGHT = 80
@@ -144,10 +147,18 @@ UI_FONT_SMALL = pygame.font.Font(pygame.font.get_default_font(), FONT_SMALL_HEIG
 UI_FONT_XS = pygame.font.Font(pygame.font.get_default_font(), FONT_XS_HEIGHT)
 
 #Image sizes
-IMAGE_PEACE_WIDTH = GAME_DISPLACEMENT - 130
-IMAGE_PEACE_HEIGHT = 1.3 * IMAGE_PEACE_WIDTH
-IMAGE_CLOSE_WIDTH = GAME_DISPLACEMENT - 90
-IMAGE_CLOSE_HEIGHT = 0.91 * IMAGE_CLOSE_WIDTH
-IMAGE_START_END_WIDTH = GAME_DISPLACEMENT - 30
-IMAGE_START_END_HEIGHT = 0.66 * IMAGE_START_END_WIDTH
+IMAGE_START_END_WIDTH = 289/2.1
+IMAGE_START_END_HEIGHT = 188/2.1
+IMAGE_PEACE_WIDTH = 455/6.675
+IMAGE_PEACE_HEIGHT = 767/7.67
+IMAGE_CLOSE_WIDTH = 376/4.7
+IMAGE_CLOSE_HEIGHT = 473/4.7
 
+#Gesture images
+IMAGE_START_END = pygame.transform.scale( pygame.image.load("Project\Images\Start_end.png"), (IMAGE_START_END_WIDTH, IMAGE_START_END_HEIGHT))
+IMAGE_PEACE = pygame.transform.scale( pygame.image.load("Project\Images\Peace.png"), (IMAGE_PEACE_WIDTH, IMAGE_PEACE_HEIGHT))
+IMAGE_CLOSE = pygame.transform.scale( pygame.image.load("Project\Images\Close.png"), (IMAGE_CLOSE_WIDTH, IMAGE_CLOSE_HEIGHT))
+
+IMAGE_FRAME_SMALL = pygame.transform.scale(pygame.image.load("Project\Images\Frame.png"), (180, 160))
+IMAGE_FRAME_SMALL_WIDTH = 180
+IMAGE_FRAME_SMALL_HEIGHT = 160

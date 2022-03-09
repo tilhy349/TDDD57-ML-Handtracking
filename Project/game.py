@@ -27,7 +27,6 @@ class Game:
 
         self.game_speed = GAME_SPEED_INITIAL
         self.last_time = 0
-
         self.timer = 0
 
         self.image_point = pygame.transform.scale( pygame.image.load("Project\Images\Point.png"), (10, 10))
@@ -49,19 +48,11 @@ class Game:
         #Draw map
         self.map.draw(self.surface)
 
-        #pygame.draw.circle(self.surface, (255, 0, 0) , self.hand_tracking.retrieve_player_pos() , 5)
-        #self.surface.blit(self.image_point, self.hand_tracking.retrieve_player_pos())
+        self.blit_alpha(self.surface, IMAGE_HAND_FRAME, [X_DISPLACEMENT, Y_DISPLACEMENT], 100)
+
+        #Draw pointer
         self.blit_alpha(self.surface, self.image_point, self.hand_tracking.retrieve_player_pos(), 140)
 
-        #Draw border around hands
-        #pygame.draw will not use alpha
-        #workaround --> create pygame surface, draw rect, blit with transparency
-        pygame.draw.rect(self.surface, (0, 150, 0), pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), 2)
-        
-        #self.surface.blit(pygame.Rect(X_DISPLACEMENT, Y_DISPLACEMENT, X_SCALE, Y_SCALE), [X_DISPLACEMENT, Y_DISPLACEMENT])
-        #Draw the power up bar
-        self.ui.draw_power_bar(self.powerup.available_powerups)
-            
         #Draw the player 
         self.player.draw_player(self.surface)
         
@@ -119,6 +110,8 @@ class Game:
             
             self.draw_running()
             self.ui.draw_ui_game(self.map.n_coins, self.map.total_distance)
+            #Draw the power up bar
+            self.ui.draw_power_bar(self.powerup.available_powerups)
             
             #Update player pos
             self.player.move_player(dt) 

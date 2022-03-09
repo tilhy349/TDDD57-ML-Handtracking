@@ -14,28 +14,34 @@ class DrawableObject(ABC):
     def draw(self, surface):
         pass
 
+    @abstractmethod
     def update_pos(self, pos):
-        self.pos = pygame.Vector2(self.pos.x, self.pos.y + pos)
-        self.hitbox.update(self.pos.x, self.pos.y, MAP_BLOCK_WIDTH, MAP_BLOCK_HEIGHT)
+        pass
 
 class Coin (DrawableObject):
     def __init__(self, pos, image):
         DrawableObject.__init__(self, pos, image)
         
     def draw(self, surface):
-        #print("Drawing coin")
-        #pygame.draw.rect(surface, (250, 250, 0), self.hitbox)
         surface.blit(self.image, self.pos)
+        #pygame.draw.rect(surface, (250, 250, 0), self.hitbox)
+
+    def update_pos(self, pos):
+        self.pos = pygame.Vector2(self.pos.x, self.pos.y + pos)
+        self.hitbox.update(self.pos.x, self.pos.y, IMAGE_COIN.get_width(), IMAGE_COIN.get_height())
 
 class Block (DrawableObject):
     def __init__(self, pos, image):
         DrawableObject.__init__(self, pos, image)
         
     def draw(self, surface):
-        #print("Drawing box")
-        #pygame.draw.rect(surface, (155, 103, 60), self.hitbox)
-        
         surface.blit(self.image, self.pos)
+        #pygame.draw.rect(surface, (155, 103, 60), self.hitbox)
+    
+    def update_pos(self, pos):
+        border = 7
+        self.pos = pygame.Vector2(self.pos.x, self.pos.y + pos)
+        self.hitbox.update(self.pos.x + border, self.pos.y + border, MAP_BLOCK_WIDTH - border * 2, MAP_BLOCK_HEIGHT - border * 2)
 
 
 class Map:
@@ -46,10 +52,8 @@ class Map:
         
         self.block_movement = 0
 
-        # self.image_block1 = pygame.transform.scale( pygame.image.load("Project\Images\Block1.png"), (MAP_BLOCK_WIDTH, MAP_BLOCK_HEIGHT))
-        # self.image_block2 = pygame.transform.scale( pygame.image.load("Project\Images\Block2.png"), (MAP_BLOCK_WIDTH, MAP_BLOCK_HEIGHT))
-        # self.image_block3 = pygame.transform.scale( pygame.image.load("Project\Images\Block3.png"), (MAP_BLOCK_WIDTH, MAP_BLOCK_HEIGHT))
-        # self.image_coin = pygame.transform.scale( pygame.image.load("Project\Images\Coin.png"), (MAP_BLOCK_HEIGHT, MAP_BLOCK_HEIGHT))
+        self.clouds_pos_1 = pygame.Vector2(GAME_DISPLACEMENT,-IMAGE_CLOUDS_HEIGHT + SCREEN_HEIGHT)
+        self.clouds_pos_2 = pygame.Vector2(GAME_DISPLACEMENT,-IMAGE_CLOUDS_HEIGHT * 2 + SCREEN_HEIGHT)
 
     def createRow(self):
         #Spawn rate, spawn or not? what to spawn?
@@ -92,6 +96,16 @@ class Map:
     
     
     def move_objects(self, pos):
+        #Move clouds
+        self.clouds_pos_1 += pygame.Vector2(0, pos * 0.2)
+        self.clouds_pos_2 += pygame.Vector2(0, pos * 0.2)
+
+        #If the bottom image reaches the bottom of the screen, then move it above the other one
+        if self.clouds_pos_1.y > SCREEN_HEIGHT:
+            self.clouds_pos_1 = pygame.Vector2(GAME_DISPLACEMENT,-IMAGE_CLOUDS_HEIGHT * 2 + SCREEN_HEIGHT)
+        elif self.clouds_pos_2.y > SCREEN_HEIGHT:
+            self.clouds_pos_2 = pygame.Vector2(GAME_DISPLACEMENT,-IMAGE_CLOUDS_HEIGHT * 2 + SCREEN_HEIGHT)
+
         #Update position for each object
         for i in self.objects:
             i.update_pos(pos)
@@ -120,7 +134,11 @@ class Map:
 
         surface.blit(IMAGE_BACKGROUND, [0,0])
 
-        surface.blit(IMAGE_CLOUDS, [GAME_DISPLACEMENT,-700])
+        #Blit the cloud images that is visible on screen
+        if self.clouds_pos_1.y > -IMAGE_CLOUDS_HEIGHT:
+            surface.blit(IMAGE_CLOUDS, self.clouds_pos_1)
+        if self.clouds_pos_2.y > -IMAGE_CLOUDS_HEIGHT:
+            surface.blit(IMAGE_CLOUDS_MIRROR, self.clouds_pos_2)
 
         #pygame.draw.rect(surface, (255, 255, 0), pygame.Rect(0, 0, GAME_DISPLACEMENT, SCREEN_HEIGHT), 1)
         #pygame.draw.rect(surface, (255, 255, 0), pygame.Rect(SCREEN_WIDTH - GAME_DISPLACEMENT, 0, GAME_DISPLACEMENT, SCREEN_HEIGHT), 1)
