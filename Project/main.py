@@ -1,6 +1,3 @@
-import cv2
-import os
-import mediapipe as mp
 import pygame 
 import sys
 from game import Game
@@ -14,8 +11,6 @@ update_map_speed = pygame.USEREVENT + 4
 
 # Initialize pygame
 pygame.init()
-
-pygame.font.init()
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -57,10 +52,22 @@ def user_events():
         if (event.type == update_map_speed and game.game_state == State.RUNNING 
             and game.powerup.current_powerup == Powerup.SLOWMOTION):
             game.game_speed += SPEED_UPDATE_STEP
-
+    
 
 #START OF MAIN-LOOP
 
+#Profiling
+# import cProfile, pstats
+
+# profiler = cProfile.Profile()
+# profiler.enable()
+# for i in range(10):
+#     game.update()
+# profiler.disable()
+# stats = pstats.Stats(profiler).sort_stats('ncalls')
+# stats.strip_dirs()
+# #stats.dump_stats('export-data.txt')
+# stats.print_stats()#
 
 while True: 
     

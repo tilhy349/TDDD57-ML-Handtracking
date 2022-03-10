@@ -1,7 +1,15 @@
-import mediapipe as mp
 import pygame
-import math
 from settings import *
+#Constants
+
+#Limits for the player movement area
+PLAYER_LIMIT_UP = 40
+PLAYER_LIMIT_DOWN = 400
+
+#Specified delay for updating player movement
+DELAY = 200
+PLAYER_VELOCITY = 4
+MAX_TAIL = 4
 
 class Player:
 
@@ -16,26 +24,34 @@ class Player:
         self.player_image = PlayerImage.DEFAULT
 
         self.tail = []
+
+        self.IMAGE_PLAYER_DEFAULT = pygame.transform.scale( pygame.image.load("Project\Images\Dino_default.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
+        self.IMAGE_PLAYER_PEACE = pygame.transform.scale( pygame.image.load("Project\Images\Dino_peace.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
+        self.IMAGE_PLAYER_CLOSE = pygame.transform.scale( pygame.image.load("Project\Images\Dino_close.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
+
+        self.IMAGE_PLAYER_DEFAULT_MIRROR = pygame.transform.scale( pygame.image.load("Project\Images\Dino_default_mirrored.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
+        self.IMAGE_PLAYER_PEACE_MIRROR = pygame.transform.scale( pygame.image.load("Project\Images\Dino_peace_mirrored.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
+        self.IMAGE_PLAYER_CLOSE_MIRROR = pygame.transform.scale( pygame.image.load("Project\Images\Dino_close_mirrored.png"), (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
     
     def draw_player(self, surface):
-        image = IMAGE_PLAYER_DEFAULT
+        image = self.IMAGE_PLAYER_DEFAULT
         
         #Dino going to the left
         if self.moving_dir.x < 0:
             if self.player_image == PlayerImage.CLOSE:
-                image = IMAGE_PLAYER_CLOSE_MIRROR
+                image = self.IMAGE_PLAYER_CLOSE_MIRROR
             elif self.player_image == PlayerImage.PEACE:
-                image = IMAGE_PLAYER_PEACE_MIRROR
+                image = self.IMAGE_PLAYER_PEACE_MIRROR
             else:
-                image = IMAGE_PLAYER_DEFAULT_MIRROR
+                image = self.IMAGE_PLAYER_DEFAULT_MIRROR
         #Dino going to the right
         else:
             if self.player_image == PlayerImage.CLOSE:
-                image = IMAGE_PLAYER_CLOSE
+                image = self.IMAGE_PLAYER_CLOSE
             elif self.player_image == PlayerImage.PEACE:
-                image = IMAGE_PLAYER_PEACE
+                image = self.IMAGE_PLAYER_PEACE
             else:
-                image = IMAGE_PLAYER_DEFAULT
+                image = self.IMAGE_PLAYER_DEFAULT
 
         #Draw tail
         for idx, i in enumerate(self.tail):
@@ -43,7 +59,6 @@ class Player:
             blit_alpha(surface, image, i, 25 * idx+1) 
 
         surface.blit(image, self.curr_pos)
-
 
     #Update the direction which the player is moving towards
     #This is called each time the timer passes a delay value

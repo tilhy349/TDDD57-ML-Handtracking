@@ -1,6 +1,5 @@
 import pygame
 import cv2
-import mediapipe as mp
 from HandTracking import HandTracking
 from settings import *
 from player import Player
@@ -11,7 +10,7 @@ from ui import UI
 class Game:
     def __init__(self, surface):
         self.surface = surface
-
+       
         #Load camera (webcam)
         self.cap = cv2.VideoCapture(0) 
 
@@ -29,19 +28,18 @@ class Game:
         self.last_time = 0
         self.timer = 0
 
-        self.image_point = pygame.transform.scale( pygame.image.load("Project\Images\Point.png"), (10, 10))
+        self.image_point = pygame.transform.scale( pygame.image.load("Project\Images\Point.png"), (10, 10)).convert_alpha()
+        self.IMAGE_HAND_FRAME = pygame.transform.scale(pygame.image.load("Project\Images\Hand_frame.png"), (X_SCALE, Y_SCALE)).convert_alpha()
 
     def load_camera(self):
         #Store the current frame from webcam
         _, self.frame = self.cap.read()
     
     def draw_running(self):
-        self.surface.fill((255,255,255))
-        
         #Draw map
         self.map.draw(self.surface)
 
-        blit_alpha(self.surface, IMAGE_HAND_FRAME, [X_DISPLACEMENT, Y_DISPLACEMENT], 100)
+        blit_alpha(self.surface, self.IMAGE_HAND_FRAME, [X_DISPLACEMENT, Y_DISPLACEMENT], 100)
 
         #Draw pointer
         blit_alpha(self.surface, self.image_point, self.hand_tracking.retrieve_player_pos(), 140)
@@ -69,6 +67,30 @@ class Game:
             else:
                 self.game_state = State.RUNNING
                 self.reset_game() 
+
+    def run_game(self, dt):
+        self.draw_running()
+        self.ui.draw_ui_game(self.map.n_coins, self.map.total_distance, self.powerup.available_powerups)
+            
+        #Update player pos
+        self.player.move_player(dt) 
+            
+        #Set and process current power up
+        self.powerup.set(self.hand_tracking.current_gesture)
+        self.map.n_coins = self.powerup.process(dt, self.map.n_coins)
+
+        #Update player color depending on powerup
+        self.player.player_image = self.powerup.player_image
+            
+        #Controlling if the player have collided with a block, true -> end game
+        if self.map.block_collision(self.player.hitbox, self.powerup.current_powerup == Powerup.INVISIBLE):
+            self.game_state = State.END   
+
+        if self.powerup.current_powerup != Powerup.SLOWMOTION:
+            #Check time and update movement speed
+            self.map.update_map_movement(self.game_speed, dt)
+        else:
+            self.map.update_map_movement(SLOWMOTION_SPEED, dt)
 
     def reset_game(self):
         self.map = Map()
@@ -100,40 +122,16 @@ class Game:
         if self.game_state == State.MENU:
             self.ui.draw_ui_menu(self.timer)
         elif self.game_state == State.RUNNING:
-            
-            self.draw_running()
-            self.ui.draw_ui_game(self.map.n_coins, self.map.total_distance)
-            #Draw the power up bar
-            self.ui.draw_power_bar(self.powerup.available_powerups)
-            
-            #Update player pos
-            self.player.move_player(dt) 
-            
-            #Set and process current power up
-            self.powerup.set(self.hand_tracking.current_gesture)
-            self.map.n_coins = self.powerup.process(dt, self.map.n_coins)
-
-            #Update player color depending on powerup
-            self.player.player_image = self.powerup.player_image
-            
-            #Controlling if the player have collided with a block, true -> end game
-            if self.map.block_collision(self.player.hitbox, self.powerup.current_powerup == Powerup.INVISIBLE):
-                self.game_state = State.END   
-            if self.powerup.current_powerup != Powerup.SLOWMOTION:
-                #Check time and update movement speed
-                self.map.update_map_movement(self.game_speed, dt)
-            else:
-                self.map.update_map_movement(SLOWMOTION_SPEED, dt)
-
+            self.run_game(dt)
         else:
-            self.ui.draw_ui_end(self.map.n_coins, self.map.total_distance, self.timer)
+            self.ui.draw_ui_end(self.map.total_distance, self.timer)
 
         #Draw hand marker based on hand position
         self.hand_tracking.draw_hands(self.surface) 
         
         #Show webcam with landmarks on screen
-        cv2.imshow("Frame", cv2.flip(self.frame, 1))
-        cv2.waitKey(1) 
+        #cv2.imshow("Frame", cv2.flip(self.frame, 1))
+        #cv2.waitKey(1) 
 
         pygame.display.update()
         self.clock.tick(FPS)
