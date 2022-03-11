@@ -80,9 +80,6 @@ class Map:
         #Update position for each object
         for i in self.objects:
 
-            #if isinstance(i, Coin):
-                #i.update_image(dt)
-
             i.update_pos(pos, dt)
             
             #If object is out of bounds, remove object
@@ -94,9 +91,10 @@ class Map:
         #Check collision between all blocks and player hitbox
         for i in self.objects:
 
-            if not invisible and isinstance(i, Block) and i.hitbox.colliderect(player_hitbox):
+            isBlock = isinstance(i, Block)
+            if not invisible and isBlock and i.hitbox.colliderect(player_hitbox):
                 return True
-            elif isinstance(i, Coin) and i.hitbox.colliderect(player_hitbox):
+            elif not isBlock and i.hitbox.colliderect(player_hitbox):
                 self.n_coins += 1
                 self.objects.remove(i)
 

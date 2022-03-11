@@ -56,19 +56,6 @@ def user_events():
 
 #START OF MAIN-LOOP
 
-#Profiling
-# import cProfile, pstats
-
-# profiler = cProfile.Profile()
-# profiler.enable()
-# for i in range(10):
-#     game.update()
-# profiler.disable()
-# stats = pstats.Stats(profiler).sort_stats('ncalls')
-# stats.strip_dirs()
-# #stats.dump_stats('export-data.txt')
-# stats.print_stats()#
-
 while True: 
     
     #Events

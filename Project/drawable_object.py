@@ -22,10 +22,6 @@ class DrawableObject(ABC):
     def update_pos(self, pos, dt):
         pass
 
-    # @abstractmethod
-    # def check_collision(self):
-    #     pass
-
 class Coin (DrawableObject):
     def __init__(self, pos, image, time):
         DrawableObject.__init__(self, pos, image)

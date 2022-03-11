@@ -1,6 +1,6 @@
 import pygame
 import cv2
-from HandTracking import HandTracking
+from hand_tracking import HandTracking
 from settings import *
 from player import Player
 from map import Map

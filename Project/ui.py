@@ -32,7 +32,7 @@ UI_FONT_XS = pygame.font.Font('Project\Fonts\PixelOperator-Bold.ttf', FONT_XS_HE
 FRAME_SMALL_WIDTH = 180
 FRAME_SMALL_HEIGHT = 160
 
-#Variables for text, image placement
+#Variables for text and image placement
 FRAME_HEIGHT = 160
 BORDER = 10    
 DISP_Y = int((SCREEN_HEIGHT - 3*FRAME_HEIGHT)/4)
